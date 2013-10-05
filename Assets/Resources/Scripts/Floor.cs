@@ -16,6 +16,7 @@ public class Floor : MonoBehaviour {
         if (height == 0) height = 32;
         positions = new float[width, height];
         transforms = new Transform[width, height];
+        jitter = new float[width, height];
         removeIsland = new Stack();
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
@@ -24,6 +25,7 @@ public class Floor : MonoBehaviour {
                 g.transform.Rotate(0, 0, Mathf.Floor(Random.value * 4) * 90);
                 transforms[i, j] = g.transform;
                 positions[i, j] = transform.position.y - 5 + Mathf.PerlinNoise(g.transform.position.x / 2, g.transform.position.z / 2);
+                jitter[i, j] = 0.1f;
             }
         }
 
@@ -64,7 +66,20 @@ public class Floor : MonoBehaviour {
                 dist = positions[i, j] - t.position.y;
                 move = Mathf.Sign(dist) * Time.deltaTime * Mathf.Min(1, Mathf.Abs(dist));
 
-                t.position = new Vector3(i, t.position.y + Mathf.Lerp(move, (Random.value - 0.5f) * Time.deltaTime, 0.3f), j);
+                jitter[i,j] = 0.1f;
+                foreach (Island island in islands) {
+                    if (island.life < 5) {
+                        if (i - island.x >= 0 && i - island.x < island.width) {
+                            if (j - island.y >= 0 && j - island.y < island.height) {
+                                if(island.heights[i - island.x, j - island.y] > 0)
+                                    jitter[i,j] += (5-island.life)/5;
+                            }
+                        }
+                    }
+                }
+
+                t.position = new Vector3(i, t.position.y + Mathf.Lerp(move, (Random.value - 0.5f) * Time.deltaTime * 4, jitter[i,j]), j);
+                //t.position = new Vector3(i, Mathf.Min(Mathf.Max(positions[i, j] - 0.5f, t.position.y), positions[i, j] + 0.5f), j);
             }
         }
 
