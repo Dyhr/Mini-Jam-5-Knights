@@ -17,10 +17,17 @@ public class Player : MonoBehaviour {
     public Vector3 swordRotOri;
     public Vector3 velocity;
     public bool jumping = false;
+    public float defaultWalkSpeed = 5;
+    public float defaultTurnSpeed = 0.8f;
+    private float walkSpeed;
+    private float turnSpeed;
+    private float gravity = 8;
 
 	void Start () {
         ali = true;
         velocity = Vector3.zero;
+        walkSpeed = defaultWalkSpeed;
+        turnSpeed = defaultTurnSpeed;
         GameObject[] swords = GameObject.FindGameObjectsWithTag("sword");
         foreach (GameObject sword in swords) {
             if (sword.transform.parent == transform) {
@@ -57,7 +64,9 @@ public class Player : MonoBehaviour {
         if (!ali)
             return;
         float h;
-        if (transform.position.x > 1 && transform.position.z > 1 && transform.position.x < 31 && transform.position.z < 31) {
+        walkSpeed = defaultWalkSpeed;
+        turnSpeed = defaultTurnSpeed;
+        if (transform.position.x > 1 && transform.position.z > 1 && transform.position.x < Floor.width && transform.position.z < Floor.height) {
             float max = 0;
             for (int i = -1; i <= 1; i++) {
                 for (int j = -1; j <= 1; j++) {
@@ -72,16 +81,18 @@ public class Player : MonoBehaviour {
             Vector3 input = Input.GetAxis("Player" + (int)index + "X") * Camera.right + Input.GetAxis("Player" + (int)index + "Y") * Camera.up;
             input.y = 0;
             input.Normalize();
-            if (defending || attacking)
-                input *= 0.5f;
+            if (attacking)
+                walkSpeed *= 0.8f;
+            else if (defending)
+                walkSpeed *= 0.4f;
             transform.LookAt(Vector3.Lerp(transform.position+transform.forward,transform.position + input,0.5f));
-            transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z) + input * Time.deltaTime * 4;
+            transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z) + input * Time.deltaTime * walkSpeed;
         }
-        if (transform.position.y - 9 * Time.deltaTime < h + 3 && velocity.y - 5 < 0.001f) {
+        if (transform.position.y - 9 * Time.deltaTime < h + 3 && velocity.y - gravity < 0.001f) {
             jumping = false;
             velocity.y = 0;
         }
-        transform.position = new Vector3(transform.position.x, Mathf.Lerp(transform.position.y,Mathf.Max(transform.position.y-5*Time.deltaTime,h+3),0.5f), transform.position.z);
+        transform.position = new Vector3(transform.position.x, Mathf.Lerp(transform.position.y, Mathf.Max(transform.position.y - gravity * Time.deltaTime, h + 3), 0.5f), transform.position.z);
         transform.position += velocity* Time.deltaTime;
         velocity -= velocity.normalized * Mathf.Min(5,velocity.magnitude) * Time.deltaTime;
 

@@ -7,8 +7,8 @@ public class Floor : MonoBehaviour {
     public static Transform[,] transforms;
     public static float[,] positions;
     public static float[,] jitter;
-    public uint width;
-    public uint height;
+    public static uint width;
+    public static uint height;
     public Transform tile;
     public float platformInit = 2;
 
@@ -36,9 +36,9 @@ public class Floor : MonoBehaviour {
 
         islands = new ArrayList();
 
-        AddIsland(new Island(3, 3, 20, 20));
-        AddIsland(new Island(13, 3, 20, 20));
-        AddIsland(new Island(3, 13, 20, 20));
+        AddIsland(new Island(-1, -1, 20, 20));
+        AddIsland(new Island(13, -1, 20, 20));
+        AddIsland(new Island(-1, 13, 20, 20));
         AddIsland(new Island(13, 13, 20, 20));
     }
 
