@@ -18,7 +18,7 @@ public class Tile : MonoBehaviour {
 	void Update () {
         if (!inited)
             return;
-        if (transform.position.y < 0.5f && Floor.positions[i, j] < 0.5f)
+        if (transform.position.y < 0f && Floor.positions[i, j] < 0f)
             return;
 
         float dist = Floor.positions[i, j] - transform.position.y;

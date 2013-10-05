@@ -27,8 +27,8 @@ public class Camera : MonoBehaviour {
                 }
             }
             average /= players.Count;
-            transform.position = Vector3.Lerp(transform.position,average + Vector3.one * 20,0.2f);
-            transform.LookAt(transform.position - Vector3.one);
+            transform.position = Vector3.Lerp(transform.position,average + (Vector3.one + Vector3.up) * 20,0.2f);
+            transform.LookAt(transform.position - (Vector3.one + Vector3.up));
 
             if(players.Count > 1)
                 camera.orthographicSize = dist + 2;
