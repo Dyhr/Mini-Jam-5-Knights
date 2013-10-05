@@ -55,15 +55,15 @@ public class Player : MonoBehaviour {
         //if (!motor.canControl)
             //return;
         float h;
-        if (transform.position.x > 0 && transform.position.z > 0 && transform.position.x < 32 && transform.position.z < 32) {
-            float average = 0;
+        if (transform.position.x > 1 && transform.position.z > 1 && transform.position.x < 31 && transform.position.z < 31) {
+            float max = 0;
             for (int i = -1; i <= 1; i++) {
                 for (int j = -1; j <= 1; j++) {
-                    average += Floor.transforms[Mathf.FloorToInt(transform.position.x), Mathf.FloorToInt(transform.position.z)].position.y + 3;
+                    if (Floor.transforms[Mathf.FloorToInt(transform.position.x)+i, Mathf.FloorToInt(transform.position.z)+j].position.y > max)
+                        max = Floor.transforms[Mathf.FloorToInt(transform.position.x)+j, Mathf.FloorToInt(transform.position.z)+j].position.y;
                 }
             }
-            average /= 9;
-            h = average;
+            h = max;
         } else
             h = 2;
         if (Input.GetAxis("Player" + (int)index + "X") != 0 || Input.GetAxis("Player" + (int)index + "Y") != 0) {
@@ -74,13 +74,14 @@ public class Player : MonoBehaviour {
             //if (motor != null && motor.enabled) {
                 //motor.inputMoveDirection = input;
            // } else {
-                transform.position = new Vector3(transform.position.x, h, transform.position.z) + input*Time.deltaTime * 10;
+            transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z) + input * Time.deltaTime * 4;
             //}
         } else {
             //if (motor != null) motor.inputMoveDirection = Vector3.zero;
-            transform.position = new Vector3(transform.position.x, h, transform.position.z);
+            //
         }
         //motor.inputJump = Input.GetButton("Player" + (int)index + "Jump");
+        transform.position = new Vector3(transform.position.x, Mathf.Max(transform.position.y-9*Time.deltaTime,h+3), transform.position.z);
 
         if (Input.GetButton("Player" + (int)index + "Attack")) {
             sword.localEulerAngles = swordRotOri + new Vector3(-90, Mathf.Sin(Time.time * 10) * 90 - 90, Mathf.Sin(Time.time * 10) * 90);
