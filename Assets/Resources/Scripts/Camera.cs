@@ -27,7 +27,7 @@ public class Camera : MonoBehaviour {
                 }
             }
             average /= players.Count;
-            transform.position = Vector3.Lerp(transform.position,average + (Vector3.one + Vector3.up) * 20,0.2f);
+            transform.position = Vector3.Lerp(transform.position,average + (Vector3.one + Vector3.up) * 8,0.2f);
             transform.LookAt(transform.position - (Vector3.one + Vector3.up));
 
             if(players.Count > 1)

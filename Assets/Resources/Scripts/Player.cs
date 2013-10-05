@@ -10,12 +10,16 @@ public class Player : MonoBehaviour {
     }
     public Index index;
     private float angle;
-    //private CharacterMotor motor;
+    private bool ali;
     private Transform sword;
     public bool attacking = false;
     public Vector3 swordRotOri;
+    public Vector3 velocity;
+    public bool jumping = false;
 
 	void Start () {
+        ali = true;
+        velocity = Vector3.zero;
         GameObject[] swords = GameObject.FindGameObjectsWithTag("sword");
         foreach (GameObject sword in swords) {
             if (sword.transform.parent == transform) {
@@ -24,9 +28,6 @@ public class Player : MonoBehaviour {
                 break;
             }
         }
-        //motor = GetComponent<CharacterMotor>();
-        //if (motor == null)
-        //    Destroy(gameObject);
         if (Camera.players == null)
             Camera.players = new ArrayList();
         Camera.players.Add(this);
@@ -37,8 +38,8 @@ public class Player : MonoBehaviour {
     }
     void OnTriggerEnter(Collider other) {
         if (other.tag == "Finish") {
-            //motor.canControl = false;
-            Destroy(gameObject, 1);
+            ali = false;
+            Destroy(gameObject, 0.2f);
         } else if (other.tag == "sword") {
             if (other.transform.parent.GetComponent<Player>() != this) {
                 if (other.transform.parent.GetComponent<Player>().attacking) {
@@ -52,8 +53,8 @@ public class Player : MonoBehaviour {
     }
 	
 	void Update () {
-        //if (!motor.canControl)
-            //return;
+        if (!ali)
+            return;
         float h;
         if (transform.position.x > 1 && transform.position.z > 1 && transform.position.x < 31 && transform.position.z < 31) {
             float max = 0;
@@ -71,18 +72,18 @@ public class Player : MonoBehaviour {
             input.y = 0;
             input.Normalize();
             transform.LookAt(transform.position + input);
-            //if (motor != null && motor.enabled) {
-                //motor.inputMoveDirection = input;
-           // } else {
             transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z) + input * Time.deltaTime * 4;
-            //}
-        } else {
-            //if (motor != null) motor.inputMoveDirection = Vector3.zero;
-            //
         }
-        //motor.inputJump = Input.GetButton("Player" + (int)index + "Jump");
-        transform.position = new Vector3(transform.position.x, Mathf.Max(transform.position.y-9*Time.deltaTime,h+3), transform.position.z);
+        if (transform.position.y - 9 * Time.deltaTime < h + 3)
+            jumping = false;
+        transform.position = new Vector3(transform.position.x, Mathf.Lerp(transform.position.y,Mathf.Max(transform.position.y-9*Time.deltaTime,h+3),0.5f), transform.position.z);
+        transform.position += velocity* Time.deltaTime;
+        velocity -= velocity.normalized * Mathf.Min(5,velocity.magnitude) * Time.deltaTime;
 
+        if (Input.GetButton("Player" + (int)index + "Jump") && !jumping) {
+            velocity.y = 10;
+            jumping = true;
+        }
         if (Input.GetButton("Player" + (int)index + "Attack")) {
             sword.localEulerAngles = swordRotOri + new Vector3(-90, Mathf.Sin(Time.time * 10) * 90 - 90, Mathf.Sin(Time.time * 10) * 90);
             attacking = true;

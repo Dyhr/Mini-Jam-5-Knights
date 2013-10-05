@@ -23,7 +23,8 @@ public class Floor : MonoBehaviour {
             for (int j = 0; j < height; j++) {
                 GameObject g = (Instantiate(tile) as Transform).gameObject;
                 g.transform.position = new Vector3(transform.position.x + i - width / 2, transform.position.y+platformInit, transform.position.z + j - height / 2);
-                g.transform.Rotate(0, 0, Mathf.Floor(Random.value * 4) * 90);
+                g.transform.Rotate(0, 0, Mathf.Floor(Random.value * 8) * 45);
+                g.renderer.material.color = Color.Lerp(Color.white, Color.white * 0.25f, Mathf.PerlinNoise(g.transform.position.x/4, g.transform.position.z/4));
                 g.AddComponent<Tile>();
                 g.GetComponent<Tile>().init(i, j);
                 transforms[i, j] = g.transform;
