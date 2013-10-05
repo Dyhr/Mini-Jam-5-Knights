@@ -1,21 +1,13 @@
 fileFormatVersion: 2
-guid: fb49a70f66e8cc84e8dbfd4c7d0554eb
+guid: bdb4e1c6666f96847b7036726613fbaf
 ModelImporter:
   serializedVersion: 15
   fileIDToRecycleName:
-    100000: rockTile
-    100002: rockTile_high
-    100004: //RootNode
-    400000: rockTile
-    400002: rockTile_high
-    400004: //RootNode
-    2300000: rockTile
-    2300002: rockTile_high
-    3300000: rockTile
-    3300002: rockTile_high
-    4300000: rockTile
-    4300002: rockTile_high
-    7400000: Default Take
+    100000: //RootNode
+    400000: //RootNode
+    2300000: //RootNode
+    3300000: //RootNode
+    4300000: Cube
     9500000: //RootNode
   materials:
     importMaterials: 0
