@@ -3,13 +3,14 @@ using System.Collections;
 
 public class Floor : MonoBehaviour {
     private Stack removeIsland;
-    private ArrayList islands;
-    private Transform[,] transforms;
-    private float[,] positions;
-    private float[,] jitter;
+    public static ArrayList islands;
+    public static Transform[,] transforms;
+    public static float[,] positions;
+    public static float[,] jitter;
     public uint width;
     public uint height;
     public Transform tile;
+    public float platformInit = 2;
 
     void Start() {
         if (width == 0) width = 32;
@@ -21,8 +22,10 @@ public class Floor : MonoBehaviour {
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
                 GameObject g = (Instantiate(tile) as Transform).gameObject;
-                g.transform.position = new Vector3(transform.position.x + i - width / 2, transform.position.y, transform.position.z + j - height / 2);
+                g.transform.position = new Vector3(transform.position.x + i - width / 2, transform.position.y+platformInit, transform.position.z + j - height / 2);
                 g.transform.Rotate(0, 0, Mathf.Floor(Random.value * 4) * 90);
+                g.AddComponent<Tile>();
+                g.GetComponent<Tile>().init(i, j);
                 transforms[i, j] = g.transform;
                 positions[i, j] = transform.position.y - 5 + Mathf.PerlinNoise(g.transform.position.x / 2, g.transform.position.z / 2);
                 jitter[i, j] = 0.1f;
@@ -57,32 +60,6 @@ public class Floor : MonoBehaviour {
     }
 
     void Update() {
-        Transform t;
-        float dist;
-        float move;
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
-                t = transforms[i, j];
-                dist = positions[i, j] - t.position.y;
-                move = Mathf.Sign(dist) * Time.deltaTime * Mathf.Min(1, Mathf.Abs(dist));
-
-                jitter[i,j] = 0.1f;
-                foreach (Island island in islands) {
-                    if (island.life < 5) {
-                        if (i - island.x >= 0 && i - island.x < island.width) {
-                            if (j - island.y >= 0 && j - island.y < island.height) {
-                                if(island.heights[i - island.x, j - island.y] > 0)
-                                    jitter[i,j] += (5-island.life)/5;
-                            }
-                        }
-                    }
-                }
-
-                t.position = new Vector3(i, t.position.y + Mathf.Lerp(move, (Random.value - 0.5f) * Time.deltaTime * 4, jitter[i,j]), j);
-                //t.position = new Vector3(i, Mathf.Min(Mathf.Max(positions[i, j] - 0.5f, t.position.y), positions[i, j] + 0.5f), j);
-            }
-        }
-
         foreach (Island i in islands) {
             i.life -= Time.deltaTime;
             if (i.life <= 0) {
@@ -92,7 +69,7 @@ public class Floor : MonoBehaviour {
         while (removeIsland.Count > 0) {
             islands.Remove(removeIsland.Pop() as Island);
             AddIsland(new Island(Mathf.FloorToInt(Random.value * 32) - 8, Mathf.FloorToInt(Random.value * 32) - 8, 20, 20));
-            if(islands.Count < 18)
+            if(islands.Count < 10)
                 AddIsland(new Island(Mathf.FloorToInt(Random.value * 32) - 8, Mathf.FloorToInt(Random.value * 32) - 8, 20, 20));
         }
     }
