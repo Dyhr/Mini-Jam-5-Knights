@@ -24,7 +24,8 @@ public class Floor : MonoBehaviour {
                 GameObject g = (Instantiate(tile) as Transform).gameObject;
                 g.transform.position = new Vector3(transform.position.x + i - width / 2, transform.position.y+platformInit, transform.position.z + j - height / 2);
                 g.transform.Rotate(0, 0, Mathf.Floor(Random.value * 8) * 45);
-                g.renderer.material.color = Color.Lerp(Color.white, Color.white * 0.25f, Mathf.PerlinNoise(g.transform.position.x/4, g.transform.position.z/4));
+                g.renderer.material.color = Color.Lerp(Color.Lerp(Color.white, Color.white * 0.2f, Mathf.PerlinNoise(g.transform.position.x/4, g.transform.position.z/4)),
+                    Color.Lerp(Color.white, Color.white * 0.2f, Random.value),0.4f);
                 g.AddComponent<Tile>();
                 g.GetComponent<Tile>().init(i, j);
                 transforms[i, j] = g.transform;
@@ -69,9 +70,9 @@ public class Floor : MonoBehaviour {
         }
         while (removeIsland.Count > 0) {
             islands.Remove(removeIsland.Pop() as Island);
-            AddIsland(new Island(Mathf.FloorToInt(Random.value * 32) - 8, Mathf.FloorToInt(Random.value * 32) - 8, 20, 20));
+            AddIsland(new Island(Mathf.FloorToInt(Random.value * 16)-4, Mathf.FloorToInt(Random.value * 16)-4, 20, 20));
             if(islands.Count < 10)
-                AddIsland(new Island(Mathf.FloorToInt(Random.value * 32) - 8, Mathf.FloorToInt(Random.value * 32) - 8, 20, 20));
+                AddIsland(new Island(Mathf.FloorToInt(Random.value * 16)-4, Mathf.FloorToInt(Random.value * 16)-4, 20, 20));
         }
     }
 }

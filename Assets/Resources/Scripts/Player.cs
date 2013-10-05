@@ -13,6 +13,7 @@ public class Player : MonoBehaviour {
     private bool ali;
     private Transform sword;
     public bool attacking = false;
+    public bool defending = false;
     public Vector3 swordRotOri;
     public Vector3 velocity;
     public bool jumping = false;
@@ -42,8 +43,8 @@ public class Player : MonoBehaviour {
             Destroy(gameObject, 0.2f);
         } else if (other.tag == "sword") {
             if (other.transform.parent.GetComponent<Player>() != this) {
-                if (other.transform.parent.GetComponent<Player>().attacking) {
-                    //motor.SetVelocity((transform.position - other.transform.position).normalized * 15);
+                if (other.transform.parent.GetComponent<Player>().attacking && !defending) {
+                    velocity = (transform.position - other.transform.position).normalized * 10;
                 }
             }
         }
@@ -71,12 +72,16 @@ public class Player : MonoBehaviour {
             Vector3 input = Input.GetAxis("Player" + (int)index + "X") * Camera.right + Input.GetAxis("Player" + (int)index + "Y") * Camera.up;
             input.y = 0;
             input.Normalize();
-            transform.LookAt(transform.position + input);
+            if (defending || attacking)
+                input *= 0.5f;
+            transform.LookAt(Vector3.Lerp(transform.position+transform.forward,transform.position + input,0.5f));
             transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z) + input * Time.deltaTime * 4;
         }
-        if (transform.position.y - 9 * Time.deltaTime < h + 3)
+        if (transform.position.y - 9 * Time.deltaTime < h + 3 && velocity.y - 5 < 0.001f) {
             jumping = false;
-        transform.position = new Vector3(transform.position.x, Mathf.Lerp(transform.position.y,Mathf.Max(transform.position.y-9*Time.deltaTime,h+3),0.5f), transform.position.z);
+            velocity.y = 0;
+        }
+        transform.position = new Vector3(transform.position.x, Mathf.Lerp(transform.position.y,Mathf.Max(transform.position.y-5*Time.deltaTime,h+3),0.5f), transform.position.z);
         transform.position += velocity* Time.deltaTime;
         velocity -= velocity.normalized * Mathf.Min(5,velocity.magnitude) * Time.deltaTime;
 
@@ -90,6 +95,12 @@ public class Player : MonoBehaviour {
         } else {
             sword.localEulerAngles = swordRotOri;
             attacking = false;
+        }
+        if (Input.GetButton("Player" + (int)index + "Defend") && !attacking) {
+            sword.localEulerAngles = swordRotOri + new Vector3(-90+Mathf.Sin(Time.time * 10) * 90, Mathf.Sin(Time.time * 10) * 90 - 90, 0);
+            defending = true;
+        } else {
+            defending = false;
         }
 
         if (transform.position.y < -5)
