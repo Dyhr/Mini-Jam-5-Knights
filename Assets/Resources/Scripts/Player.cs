@@ -18,7 +18,7 @@ public class Player : MonoBehaviour {
     public Vector3 velocity;
     public bool jumping = false;
     public float defaultWalkSpeed = 5;
-    public float defaultTurnSpeed = 0.8f;
+    public float defaultTurnSpeed = 0.1f;
     private float walkSpeed;
     private float turnSpeed;
     private float gravity = 18;
@@ -65,8 +65,9 @@ public class Player : MonoBehaviour {
             Destroy(gameObject, 0.2f);
         } else if (other.tag == "sword") {
             if (other.transform.parent.GetComponent<Player>() != this) {
-                if (other.transform.parent.GetComponent<Player>().attacking && !defending) {
-                    velocity = (transform.position - other.transform.position).normalized * 10;
+                if (other.transform.parent.GetComponent<Player>().attacking &&
+                    !(defending && Vector3.Angle(transform.forward, transform.position - other.transform.parent.position) < 180)) {
+                    velocity = (transform.position - other.transform.parent.position).normalized * 10;
                 }
             }
         }
@@ -82,7 +83,7 @@ public class Player : MonoBehaviour {
             float max = 0;
             for (int i = -1; i <= 1; i++) {
                 for (int j = -1; j <= 1; j++) {
-                    if (!(transform.position.x + i > 0 && transform.position.z + j > 0 && transform.position.x + i < Floor.width && transform.position.z + j < Floor.height))
+                    if (!(Mathf.Floor(transform.position.x) + i > 0 && Mathf.Floor(transform.position.z) + j > 0 && Mathf.Floor(transform.position.x) + i < Floor.width && Mathf.Floor(transform.position.z) + j < Floor.height))
                         continue;
                     if (Floor.transforms[Mathf.FloorToInt(transform.position.x) + i, Mathf.FloorToInt(transform.position.z) + j].position.y > max)
                         max = Floor.transforms[Mathf.FloorToInt(transform.position.x) + j, Mathf.FloorToInt(transform.position.z) + j].position.y;
@@ -96,12 +97,16 @@ public class Player : MonoBehaviour {
             Vector3 input = Input.GetAxis("Player" + (int)index + "X") * Camera.right + Input.GetAxis("Player" + (int)index + "Y") * Camera.up;
             input.y = 0;
             input.Normalize();
-            if (attacking)
-                walkSpeed *= 0.8f;
-            else if (defending)
+            if (attacking) {
+                walkSpeed *= 1.3f;
+                turnSpeed *= 0.05f;
+            } else if (defending) {
                 walkSpeed *= 0.4f;
-            transform.LookAt(Vector3.Lerp(transform.position+transform.forward,transform.position + input,0.5f));
-            transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z) + input * Time.deltaTime * walkSpeed;
+                turnSpeed *= 0.5f;
+            }
+            //transform.LookAt(Vector3.Lerp(transform.position+transform.forward,transform.position + input,0.5f));
+            transform.rotation = Quaternion.Lerp(transform.rotation,Quaternion.LookRotation(input),turnSpeed);
+            transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z) + transform.forward * Time.deltaTime * walkSpeed;
         }
         velocity.y -= gravity * Time.deltaTime;
         if (transform.position.y - 9 * Time.deltaTime < h + 2.5f && velocity.y < 0.001f) {
@@ -117,14 +122,14 @@ public class Player : MonoBehaviour {
             jumping = true;
         }
         if (Input.GetButton("Player" + (int)index + "Attack")) {
-            sword.localEulerAngles = swordRotOri + new Vector3(-90, Mathf.Sin(Time.time * 10) * 90 - 90, Mathf.Sin(Time.time * 10) * 90);
+            sword.localEulerAngles = swordRotOri + new Vector3(0, Mathf.Sin(Time.time * 10) * 90, 0);
             attacking = true;
         } else {
             sword.localEulerAngles = swordRotOri;
             attacking = false;
         }
         if (Input.GetButton("Player" + (int)index + "Defend") && !attacking) {
-            sword.localEulerAngles = swordRotOri + new Vector3(-90+Mathf.Sin(Time.time * 10) * 90, Mathf.Sin(Time.time * 10) * 90 - 90, 0);
+            sword.localEulerAngles = swordRotOri + new Vector3(-90, 0, Mathf.Sin(Time.time * 20) * 360);
             defending = true;
         } else {
             defending = false;
