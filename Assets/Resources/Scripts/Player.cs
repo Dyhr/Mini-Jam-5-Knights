@@ -61,9 +61,24 @@ public class Player : MonoBehaviour {
                 break;
             }
         }
-        if (Camera.players == null)
-            Camera.players = new ArrayList();
-        Camera.players.Add(this);
+        if (Cam.players == null)
+            Cam.players = new ArrayList();
+        Cam.players.Add(this);
+
+        switch ((int)index) {
+            case 1:
+                renderer.material.color = Color.Lerp(Color.white, Color.red, 0.6f);
+                break;
+            case 2:
+                renderer.material.color = Color.Lerp(Color.white, Color.blue, 0.6f);
+                break;
+            case 3:;
+                renderer.material.color = Color.Lerp(Color.white, Color.green, 0.6f);
+                break;
+            case 4:
+                renderer.material.color = Color.Lerp(Color.white, Color.yellow, 0.6f);
+                break;
+        }
 
         makeHidden(transform, "Hidden");
 	}
@@ -76,9 +91,9 @@ public class Player : MonoBehaviour {
 
     void OnDestroy() {
         ali = false;
-        Camera.players.Remove(this);
-        if (Camera.players.Count == 0) {
-            Application.LoadLevel(0);
+        Cam.players.Remove(this);
+        if ((Cam.players.Count == 0 && Cam.alone) || (Cam.players.Count == 1 && !Cam.alone)) {
+            Cam.destroy = 0;
         }
     }
     void OnTriggerEnter(Collider other) {
@@ -121,16 +136,21 @@ public class Player : MonoBehaviour {
         } else {
             h = -1;
         }
+        if (true) {
+
+        } else {
+            
+        }
         if (Input.GetAxis("Player" + (int)index + "X") != 0 || Input.GetAxis("Player" + (int)index + "Y") != 0) {
-            Vector3 input = Input.GetAxis("Player" + (int)index + "X") * Camera.right + Input.GetAxis("Player" + (int)index + "Y") * Camera.up;
+            Vector3 input = Input.GetAxis("Player" + (int)index + "X") * Cam.right + Input.GetAxis("Player" + (int)index + "Y") * Cam.up;
             input.y = 0;
             input.Normalize();
             if (attacking) {
                 walkSpeed *= 1.2f;
                 turnSpeed *= 0.1f;
             } else if (defending) {
-                walkSpeed *= 0.4f;
-                turnSpeed *= 0.4f;
+                walkSpeed *= 0.3f;
+                turnSpeed *= 0.3f;
             }
             //transform.LookAt(Vector3.Lerp(transform.position+transform.forward,transform.position + input,0.5f));
             transform.rotation = Quaternion.Lerp(transform.rotation,Quaternion.LookRotation(input),turnSpeed);
@@ -150,15 +170,15 @@ public class Player : MonoBehaviour {
             jumping = true;
         }
         attackPause -= Time.deltaTime;
-        if (Input.GetButtonDown("Player" + (int)index + "Attack") && attackTimer <= 0 && attackPause <= 0) {
+        if (Input.GetButtonDown("Player" + (int)index + "Attack") && attackTimer <= 0 && attackPause <= 0 && defendTimer <= 0) {
             attackTimer = 0.5f;
-            attackPause = 1.2f;
+            attackPause = 0.9f;
             attacking = true;
         }
         if (attacking || attackTimer > 0) {
             attackTimer -= Time.deltaTime;
             sword.localEulerAngles = swordRotOri + new Vector3(90, Mathf.Sin((1-attackTimer) * 10) * 90, 0);
-            sword.localScale = swordScaOri * 1.2f;
+            sword.localScale = swordScaOri * 1.1f;
             if (attackTimer <= 0) {
                 attackTimer = 0;
                 attacking = false;
