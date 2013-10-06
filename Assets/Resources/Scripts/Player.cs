@@ -109,8 +109,8 @@ public class Player : MonoBehaviour {
                     if (!(defending && Vector3.Angle(transform.forward, transform.position - other.transform.parent.position) < 180)) {
                         velocity = (transform.position - other.transform.parent.position).normalized * 8;
                     } else {
-                        velocity = (transform.position - other.transform.parent.position).normalized * 4;
-                        other.transform.parent.GetComponent<Player>().velocity = -(transform.position - other.transform.parent.position).normalized * 4;
+                        velocity = (transform.position - other.transform.parent.position).normalized * 3;
+                        other.transform.parent.GetComponent<Player>().velocity = -(transform.position - other.transform.parent.position).normalized * 5;
                     }
                 }
             }
@@ -148,7 +148,7 @@ public class Player : MonoBehaviour {
             input.Normalize();
             if (attacking) {
                 walkSpeed *= 1.2f;
-                turnSpeed *= 0.1f;
+                turnSpeed *= 0.15f;
             } else if (defending) {
                 walkSpeed *= 0.3f;
                 turnSpeed *= 0.3f;
@@ -190,7 +190,7 @@ public class Player : MonoBehaviour {
             sword.localPosition = swordPosOri;
         }
         if (Input.GetButton("Player" + (int)index + "Defend") && !attacking) {
-            defendTimer = 1;
+            defendTimer = 0.4f;
             defending = true;
         } else {
             defending = false;

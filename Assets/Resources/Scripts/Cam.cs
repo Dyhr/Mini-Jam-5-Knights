@@ -20,7 +20,7 @@ public class Cam : MonoBehaviour {
     void Update() {
         if (destroy >= 0)
             destroy += Time.deltaTime;
-        if(destroy > 2)
+        if(destroy > 3)
             Application.LoadLevel(0);
         if (players.Count > 0) {
             if (!music.isPlaying && clips.Length > 0) {

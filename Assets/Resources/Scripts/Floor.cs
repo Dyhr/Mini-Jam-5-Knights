@@ -100,7 +100,7 @@ public class Island {
     public float[,] heights;
 
     public Island(int x, int y, int width, int height) {
-        this.life = Random.value * 15 + 6;
+        this.life = Random.value * 12 + 6;
         this.x = x;
         this.y = y;
         this.width = width;

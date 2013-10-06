@@ -13,6 +13,7 @@ public class StartUp : MonoBehaviour {
         playerMarkers = new Transform[4];
         indices = new int[]{1,2,0,3};
         for (int i = 0; i < 4; i++) {
+            joined[i] = false;
             playerMarkers[i] = (GameObject.CreatePrimitive(PrimitiveType.Capsule)).transform;
             playerMarkers[i].localScale *= 4;
             playerMarkers[i].renderer.castShadows = false;
