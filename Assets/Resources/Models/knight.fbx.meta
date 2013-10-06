@@ -4,11 +4,89 @@ ModelImporter:
   serializedVersion: 15
   fileIDToRecycleName:
     100000: //RootNode
+    100002: arm_lower_l
+    100004: arm_lower_r
+    100006: arm_upper_l
+    100008: arm_upper_r
+    100010: Armature
+    100012: Bone
+    100014: Cube
+    100016: Cube_001
+    100018: hand_l
+    100020: hand_r
+    100022: Head
+    100024: hip
+    100026: leg_lower_l
+    100028: leg_lower_r
+    100030: leg_upper_l
+    100032: leg_upper_r
+    100034: neck
+    100036: shoulder_l
+    100038: shoulder_r
+    100040: spine_001
+    100042: spine_003
+    100044: char
     400000: //RootNode
+    400002: arm_lower_l
+    400004: arm_lower_r
+    400006: arm_upper_l
+    400008: arm_upper_r
+    400010: Armature
+    400012: Bone
+    400014: Cube
+    400016: Cube_001
+    400018: hand_l
+    400020: hand_r
+    400022: Head
+    400024: hip
+    400026: leg_lower_l
+    400028: leg_lower_r
+    400030: leg_upper_l
+    400032: leg_upper_r
+    400034: neck
+    400036: shoulder_l
+    400038: shoulder_r
+    400040: spine_001
+    400042: spine_003
+    400044: char
     2300000: //RootNode
+    2300002: Cube_001
+    2300004: char
     3300000: //RootNode
+    3300002: Cube_001
+    3300004: char
     4300000: Cube
+    4300002: Cube_001
+    4300004: char
+    7400000: Default Take
+    7400002: ArmatureAction
+    7400004: running
+    7400006: running //// Armature
     9500000: //RootNode
+    11100000: //RootNode
+    11100002: arm_lower_l
+    11100004: arm_lower_r
+    11100006: arm_upper_l
+    11100008: arm_upper_r
+    11100010: Armature
+    11100012: Bone
+    11100014: char
+    11100016: hand_l
+    11100018: hand_r
+    11100020: Head
+    11100022: hip
+    11100024: leg_lower_l
+    11100026: leg_lower_r
+    11100028: leg_upper_l
+    11100030: leg_upper_r
+    11100032: neck
+    11100034: shoulder_l
+    11100036: shoulder_r
+    11100038: spine_001
+    11100040: spine_003
+    13700000: Cube
+    13700002: char
+    13700004: hip
   materials:
     importMaterials: 0
     materialName: 0
@@ -16,12 +94,33 @@ ModelImporter:
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
-    animationCompression: 1
+    animationCompression: 2
     animationRotationError: .5
     animationPositionError: .5
     animationScaleError: .5
     animationWrapMode: 0
-    clipAnimations: []
+    clipAnimations:
+    - name: running
+      takeName: running
+      firstFrame: 0
+      lastFrame: 550
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      transformMask: []
     isReadable: 1
   meshes:
     lODScreenPercentages: []
@@ -56,8 +155,9 @@ ModelImporter:
     armStretch: .0500000007
     legStretch: .0500000007
     feetSpacing: 0
-    rootMotionBoneName: 
-  lastHumanDescriptionAvatarSource: {instanceID: 0}
+    rootMotionBoneName: Bone
+  lastHumanDescriptionAvatarSource: {fileID: 9000000, guid: 8e2352ae9cfcb7644ad87531201638db,
+    type: 3}
   additionalBone: 1
-  animationType: 2
+  animationType: 1
   userData: 
