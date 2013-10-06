@@ -87,9 +87,9 @@ public class Floor : MonoBehaviour {
         }
         while (removeIsland.Count > 0) {
             islands.Remove(removeIsland.Pop() as Island);
-            AddIsland(new Island(Mathf.FloorToInt(Random.value * 16)-4, Mathf.FloorToInt(Random.value * 16)-4, 20, 20));
-            if(islands.Count < 10)
-                AddIsland(new Island(Mathf.FloorToInt(Random.value * 16)-4, Mathf.FloorToInt(Random.value * 16)-4, 20, 20));
+            AddIsland(new Island(Mathf.FloorToInt(Random.value * 20) - 6, Mathf.FloorToInt(Random.value * 20) - 6, 16 + Mathf.FloorToInt(Random.value * 6), 16 + Mathf.FloorToInt(Random.value * 6)));
+            if(islands.Count < 12)
+                AddIsland(new Island(Mathf.FloorToInt(Random.value * 20) - 6, Mathf.FloorToInt(Random.value * 20) - 6, 16 + Mathf.FloorToInt(Random.value * 6), 16 + Mathf.FloorToInt(Random.value * 6)));
         }
     }
 }
@@ -100,7 +100,7 @@ public class Island {
     public float[,] heights;
 
     public Island(int x, int y, int width, int height) {
-        this.life = Random.value * 15 + 10;
+        this.life = Random.value * 15 + 6;
         this.x = x;
         this.y = y;
         this.width = width;

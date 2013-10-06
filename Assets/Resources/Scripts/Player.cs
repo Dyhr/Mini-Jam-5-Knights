@@ -109,6 +109,7 @@ public class Player : MonoBehaviour {
                     if (!(defending && Vector3.Angle(transform.forward, transform.position - other.transform.parent.position) < 180)) {
                         velocity = (transform.position - other.transform.parent.position).normalized * 8;
                     } else {
+                        velocity = (transform.position - other.transform.parent.position).normalized * 4;
                         other.transform.parent.GetComponent<Player>().velocity = -(transform.position - other.transform.parent.position).normalized * 4;
                     }
                 }
