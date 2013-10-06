@@ -26,6 +26,7 @@ public class Cam : MonoBehaviour {
             if (!music.isPlaying && clips.Length > 0) {
                 music.clip = clips[Mathf.FloorToInt(Random.value * clips.Length)];
                 music.loop = true;
+                music.volume = 0.4f;
                 music.Play();
             }
             Vector3 average = Vector3.zero;
