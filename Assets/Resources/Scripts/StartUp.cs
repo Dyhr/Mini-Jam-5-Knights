@@ -2,14 +2,20 @@
 using System.Collections;
 
 public class StartUp : MonoBehaviour {
+    public static bool[] joined = new bool[4];
 
-	// Use this for initialization
 	void Start () {
-	
+	    
 	}
 	
-	// Update is called once per frame
 	void Update () {
-	
+        for (int i = 0; i < 4; i++) {
+            joined[i] = Input.GetButton("Player" + (i + 1) + "Attack");
+        }
+        if(Input.GetButton("Player1Jump")){
+            GetComponent<Floor>().init();
+            Debug.Log(joined[0] + " " + joined[1]);
+            enabled = false;
+        }
 	}
 }

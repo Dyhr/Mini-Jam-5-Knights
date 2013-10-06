@@ -21,7 +21,7 @@ public class Player : MonoBehaviour {
     public float defaultTurnSpeed = 0.8f;
     private float walkSpeed;
     private float turnSpeed;
-    private float gravity = 8;
+    private float gravity = 18;
 
 	void Start () {
         ali = true;
@@ -39,7 +39,15 @@ public class Player : MonoBehaviour {
         if (Camera.players == null)
             Camera.players = new ArrayList();
         Camera.players.Add(this);
+
+        makeHidden(transform, "Hidden");
 	}
+    public void makeHidden(Transform t, string layer) {
+        t.gameObject.layer = LayerMask.NameToLayer(layer);
+        for (int i = 0; i < t.childCount; i++) {
+            makeHidden(t.GetChild(i), layer);
+        }
+    }
 
     void OnDestroy() {
         Camera.players.Remove(this);
@@ -88,12 +96,13 @@ public class Player : MonoBehaviour {
             transform.LookAt(Vector3.Lerp(transform.position+transform.forward,transform.position + input,0.5f));
             transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z) + input * Time.deltaTime * walkSpeed;
         }
-        if (transform.position.y - 9 * Time.deltaTime < h + 3 && velocity.y - gravity < 0.001f) {
+        velocity.y -= gravity * Time.deltaTime;
+        if (transform.position.y - 9 * Time.deltaTime < h + 3 && velocity.y < 0.001f) {
             jumping = false;
             velocity.y = 0;
         }
-        transform.position = new Vector3(transform.position.x, Mathf.Lerp(transform.position.y, Mathf.Max(transform.position.y - gravity * Time.deltaTime, h + 3), 0.5f), transform.position.z);
-        transform.position += velocity* Time.deltaTime;
+        transform.position += velocity * Time.deltaTime;
+        transform.position = new Vector3(transform.position.x, Mathf.Lerp(transform.position.y, Mathf.Max(transform.position.y, h + 3), 0.5f), transform.position.z);
         velocity -= velocity.normalized * Mathf.Min(5,velocity.magnitude) * Time.deltaTime;
 
         if (Input.GetButton("Player" + (int)index + "Jump") && !jumping) {
