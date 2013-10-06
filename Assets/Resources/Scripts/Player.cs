@@ -106,9 +106,14 @@ public class Player : MonoBehaviour {
         } else if (other.tag == "sword") {
             if (other.transform.parent.GetComponent<Player>() != this) {
                 if (other.transform.parent.GetComponent<Player>().attacking){
+                    Instantiate(Resources.Load("HitParticle"), (transform.position + other.transform.parent.position) / 2, Quaternion.identity);
                     if (!(defending && Vector3.Angle(transform.forward, transform.position - other.transform.parent.position) < 180)) {
+                        SoundEffect s = (Instantiate(Resources.Load("SoundEff")) as GameObject).GetComponent<SoundEffect>();
+                        s.init("Sounds/hit_" + Mathf.FloorToInt(Random.value * 3));
                         velocity = (transform.position - other.transform.parent.position).normalized * 8;
                     } else {
+                        SoundEffect s = (Instantiate(Resources.Load("SoundEff")) as GameObject).GetComponent<SoundEffect>();
+                        s.init("Sounds/defend_" + Mathf.FloorToInt(Random.value * 3));
                         velocity = (transform.position - other.transform.parent.position).normalized * 3;
                         other.transform.parent.GetComponent<Player>().velocity = -(transform.position - other.transform.parent.position).normalized * 5;
                     }
@@ -175,6 +180,8 @@ public class Player : MonoBehaviour {
             attackTimer = 0.5f;
             attackPause = 0.9f;
             attacking = true;
+            SoundEffect s = (Instantiate(Resources.Load("SoundEff")) as GameObject).GetComponent<SoundEffect>();
+            s.init("Sounds/swing_"+Mathf.FloorToInt(Random.value*3));
         }
         if (attacking || attackTimer > 0) {
             attackTimer -= Time.deltaTime;
