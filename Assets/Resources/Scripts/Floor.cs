@@ -2,17 +2,21 @@
 using System.Collections;
 
 public class Floor : MonoBehaviour {
+    private bool inited = false;
     private Stack removeIsland;
     public static ArrayList islands;
     public static Transform[,] transforms;
     public static float[,] positions;
     public static float[,] jitter;
-    public uint width;
-    public uint height;
+    public static uint width;
+    public static uint height;
     public Transform tile;
     public float platformInit = 2;
 
     void Start() {
+        
+    }
+    public void init() {
         if (width == 0) width = 32;
         if (height == 0) height = 32;
         positions = new float[width, height];
@@ -22,8 +26,10 @@ public class Floor : MonoBehaviour {
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
                 GameObject g = (Instantiate(tile) as Transform).gameObject;
-                g.transform.position = new Vector3(transform.position.x + i - width / 2, transform.position.y+platformInit, transform.position.z + j - height / 2);
-                g.transform.Rotate(0, 0, Mathf.Floor(Random.value * 4) * 90);
+                g.transform.position = new Vector3(transform.position.x + i - width / 2, transform.position.y + platformInit, transform.position.z + j - height / 2);
+                g.transform.Rotate(0, 0, Mathf.Floor(Random.value * 8) * 45);
+                g.renderer.material.color = Color.Lerp(Color.Lerp(Color.white, Color.white * 0.2f, Mathf.PerlinNoise(g.transform.position.x / 4, g.transform.position.z / 4)),
+                    Color.Lerp(Color.white, Color.white * 0.2f, Random.value), 0.4f);
                 g.AddComponent<Tile>();
                 g.GetComponent<Tile>().init(i, j);
                 transforms[i, j] = g.transform;
@@ -34,10 +40,21 @@ public class Floor : MonoBehaviour {
 
         islands = new ArrayList();
 
-        AddIsland(new Island(3, 3, 20, 20));
-        AddIsland(new Island(13, 3, 20, 20));
-        AddIsland(new Island(3, 13, 20, 20));
+        AddIsland(new Island(-1, -1, 20, 20));
+        AddIsland(new Island(13, -1, 20, 20));
+        AddIsland(new Island(-1, 13, 20, 20));
         AddIsland(new Island(13, 13, 20, 20));
+
+        Player[] players = (Player[])GameObject.FindObjectsOfType(typeof(Player));
+        foreach (Player p in players) {
+            p.makeHidden(p.transform, "Players");
+            p.ali = true;
+            if (!StartUp.joined[(int)((p.GetComponent<Player>()).index) - 1]) {
+                Destroy(p.gameObject);
+            }
+        }
+
+        inited = true;
     }
 
     void AddIsland(Island island) {
@@ -60,6 +77,8 @@ public class Floor : MonoBehaviour {
     }
 
     void Update() {
+        if (!inited)
+            return;
         foreach (Island i in islands) {
             i.life -= Time.deltaTime;
             if (i.life <= 0) {
@@ -68,9 +87,9 @@ public class Floor : MonoBehaviour {
         }
         while (removeIsland.Count > 0) {
             islands.Remove(removeIsland.Pop() as Island);
-            AddIsland(new Island(Mathf.FloorToInt(Random.value * 32) - 8, Mathf.FloorToInt(Random.value * 32) - 8, 20, 20));
+            AddIsland(new Island(Mathf.FloorToInt(Random.value * 16)-4, Mathf.FloorToInt(Random.value * 16)-4, 20, 20));
             if(islands.Count < 10)
-                AddIsland(new Island(Mathf.FloorToInt(Random.value * 32) - 8, Mathf.FloorToInt(Random.value * 32) - 8, 20, 20));
+                AddIsland(new Island(Mathf.FloorToInt(Random.value * 16)-4, Mathf.FloorToInt(Random.value * 16)-4, 20, 20));
         }
     }
 }
