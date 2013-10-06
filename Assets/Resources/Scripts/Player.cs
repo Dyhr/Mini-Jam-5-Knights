@@ -9,14 +9,27 @@ public class Player : MonoBehaviour {
         Four = 4
     }
     public Index index;
-    private float angle;
+
     public bool ali;
-    private Transform sword;
     public bool attacking = false;
     public bool defending = false;
-    public Vector3 swordRotOri;
-    public Vector3 velocity;
     public bool jumping = false;
+
+    private float attackTimer = 0;
+    private float attackPause = 0;
+    private float defendTimer = 0;
+
+    private Transform sword;
+    private Transform shield;
+    private Vector3 swordRotOri;
+    private Vector3 swordPosOri;
+    private Vector3 swordScaOri;
+    private Vector3 shieldRotOri;
+    private Vector3 shieldPosOri;
+    private Vector3 shieldScaOri;
+
+    public Vector3 velocity;
+
     public float defaultWalkSpeed = 5;
     public float defaultTurnSpeed = 0.1f;
     private float walkSpeed;
@@ -33,6 +46,18 @@ public class Player : MonoBehaviour {
             if (sword.transform.parent == transform) {
                 this.sword = sword.transform;
                 this.swordRotOri = this.sword.localEulerAngles;
+                this.swordPosOri = this.sword.localPosition;
+                this.swordScaOri = this.sword.localScale;
+                break;
+            }
+        }
+        GameObject[] shields = GameObject.FindGameObjectsWithTag("shield");
+        foreach (GameObject shield in shields) {
+            if (shield.transform.parent == transform) {
+                this.shield = shield.transform;
+                this.shieldRotOri = this.shield.localEulerAngles;
+                this.shieldPosOri = this.shield.localPosition;
+                this.shieldScaOri = this.shield.localScale;
                 break;
             }
         }
@@ -67,9 +92,9 @@ public class Player : MonoBehaviour {
             if (other.transform.parent.GetComponent<Player>() != this) {
                 if (other.transform.parent.GetComponent<Player>().attacking){
                     if (!(defending && Vector3.Angle(transform.forward, transform.position - other.transform.parent.position) < 180)) {
-                        velocity = (transform.position - other.transform.parent.position).normalized * 10;
+                        velocity = (transform.position - other.transform.parent.position).normalized * 8;
                     } else {
-                        other.transform.parent.GetComponent<Player>().velocity = -(transform.position - other.transform.parent.position).normalized * 10;
+                        other.transform.parent.GetComponent<Player>().velocity = -(transform.position - other.transform.parent.position).normalized * 4;
                     }
                 }
             }
@@ -101,11 +126,11 @@ public class Player : MonoBehaviour {
             input.y = 0;
             input.Normalize();
             if (attacking) {
-                walkSpeed *= 1.3f;
-                turnSpeed *= 0.05f;
+                walkSpeed *= 1.2f;
+                turnSpeed *= 0.1f;
             } else if (defending) {
                 walkSpeed *= 0.4f;
-                turnSpeed *= 0.5f;
+                turnSpeed *= 0.4f;
             }
             //transform.LookAt(Vector3.Lerp(transform.position+transform.forward,transform.position + input,0.5f));
             transform.rotation = Quaternion.Lerp(transform.rotation,Quaternion.LookRotation(input),turnSpeed);
@@ -121,21 +146,48 @@ public class Player : MonoBehaviour {
         velocity -= velocity.normalized * Mathf.Min(5,velocity.magnitude) * Time.deltaTime;
 
         if (Input.GetButton("Player" + (int)index + "Jump") && !jumping) {
-            velocity.y = 10;
+            velocity.y = 12;
             jumping = true;
         }
-        if (Input.GetButton("Player" + (int)index + "Attack")) {
-            sword.localEulerAngles = swordRotOri + new Vector3(0, Mathf.Sin(Time.time * 10) * 90, 0);
+        attackPause -= Time.deltaTime;
+        if (Input.GetButtonDown("Player" + (int)index + "Attack") && attackTimer <= 0 && attackPause <= 0) {
+            attackTimer = 0.5f;
+            attackPause = 1.2f;
             attacking = true;
+        }
+        if (attacking || attackTimer > 0) {
+            attackTimer -= Time.deltaTime;
+            sword.localEulerAngles = swordRotOri + new Vector3(90, Mathf.Sin((1-attackTimer) * 10) * 90, 0);
+            sword.localScale = swordScaOri * 1.2f;
+            if (attackTimer <= 0) {
+                attackTimer = 0;
+                attacking = false;
+            }
         } else {
             sword.localEulerAngles = swordRotOri;
-            attacking = false;
+            sword.localScale = swordScaOri;
+            sword.localPosition = swordPosOri;
         }
         if (Input.GetButton("Player" + (int)index + "Defend") && !attacking) {
-            sword.localEulerAngles = swordRotOri + new Vector3(-90, 0, Mathf.Sin(Time.time * 20) * 360);
+            defendTimer = 1;
             defending = true;
         } else {
             defending = false;
+        }
+        if (defending || defendTimer > 0) {
+            defending = true;
+            defendTimer -= Time.deltaTime;
+            shield.localEulerAngles = shieldRotOri + new Vector3(0, 90, 0);
+            shield.localScale = shieldScaOri * 2.4f;
+            shield.localPosition = shieldPosOri + new Vector3(0.5f, 0, 0.5f);
+            if (defendTimer <= 0) {
+                defendTimer = 0;
+                defending = false;
+            }
+        } else {
+            shield.localEulerAngles = shieldRotOri;
+            shield.localScale = shieldScaOri;
+            shield.localPosition = shieldPosOri;
         }
 
         if (transform.position.y < -5)
