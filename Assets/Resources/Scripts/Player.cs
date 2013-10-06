@@ -65,9 +65,12 @@ public class Player : MonoBehaviour {
             Destroy(gameObject, 0.2f);
         } else if (other.tag == "sword") {
             if (other.transform.parent.GetComponent<Player>() != this) {
-                if (other.transform.parent.GetComponent<Player>().attacking &&
-                    !(defending && Vector3.Angle(transform.forward, transform.position - other.transform.parent.position) < 180)) {
-                    velocity = (transform.position - other.transform.parent.position).normalized * 10;
+                if (other.transform.parent.GetComponent<Player>().attacking){
+                    if (!(defending && Vector3.Angle(transform.forward, transform.position - other.transform.parent.position) < 180)) {
+                        velocity = (transform.position - other.transform.parent.position).normalized * 10;
+                    } else {
+                        other.transform.parent.GetComponent<Player>().velocity = -(transform.position - other.transform.parent.position).normalized * 10;
+                    }
                 }
             }
         }
