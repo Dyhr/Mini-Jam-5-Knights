@@ -14,7 +14,6 @@ public class StartUp : MonoBehaviour {
         }
         if(Input.GetButton("Player1Jump")){
             GetComponent<Floor>().init();
-            Debug.Log(joined[0] + " " + joined[1]);
             enabled = false;
         }
 	}

@@ -10,7 +10,7 @@ public class Player : MonoBehaviour {
     }
     public Index index;
     private float angle;
-    private bool ali;
+    public bool ali;
     private Transform sword;
     public bool attacking = false;
     public bool defending = false;
@@ -24,7 +24,7 @@ public class Player : MonoBehaviour {
     private float gravity = 18;
 
 	void Start () {
-        ali = true;
+        ali = false;
         velocity = Vector3.zero;
         walkSpeed = defaultWalkSpeed;
         turnSpeed = defaultTurnSpeed;
@@ -50,9 +50,16 @@ public class Player : MonoBehaviour {
     }
 
     void OnDestroy() {
+        ali = false;
         Camera.players.Remove(this);
+        if (Camera.players.Count == 0) {
+            Application.LoadLevel(0);
+        }
     }
     void OnTriggerEnter(Collider other) {
+        Debug.Log("Log");
+        if (!ali)
+            return;
         if (other.tag == "Finish") {
             ali = false;
             Destroy(gameObject, 0.2f);
@@ -64,9 +71,6 @@ public class Player : MonoBehaviour {
             }
         }
     }
-
-    void OnExternalVelocity() {
-    }
 	
 	void Update () {
         if (!ali)
@@ -74,17 +78,20 @@ public class Player : MonoBehaviour {
         float h;
         walkSpeed = defaultWalkSpeed;
         turnSpeed = defaultTurnSpeed;
-        if (transform.position.x > 1 && transform.position.z > 1 && transform.position.x < Floor.width && transform.position.z < Floor.height) {
+        if (transform.position.x > 0 && transform.position.z > 0 && transform.position.x < Floor.width && transform.position.z < Floor.height) {
             float max = 0;
             for (int i = -1; i <= 1; i++) {
                 for (int j = -1; j <= 1; j++) {
-                    if (Floor.transforms[Mathf.FloorToInt(transform.position.x)+i, Mathf.FloorToInt(transform.position.z)+j].position.y > max)
-                        max = Floor.transforms[Mathf.FloorToInt(transform.position.x)+j, Mathf.FloorToInt(transform.position.z)+j].position.y;
+                    if (!(transform.position.x + i > 0 && transform.position.z + j > 0 && transform.position.x + i < Floor.width && transform.position.z + j < Floor.height))
+                        continue;
+                    if (Floor.transforms[Mathf.FloorToInt(transform.position.x) + i, Mathf.FloorToInt(transform.position.z) + j].position.y > max)
+                        max = Floor.transforms[Mathf.FloorToInt(transform.position.x) + j, Mathf.FloorToInt(transform.position.z) + j].position.y;
                 }
             }
             h = max;
-        } else
-            h = 2;
+        } else {
+            h = -1;
+        }
         if (Input.GetAxis("Player" + (int)index + "X") != 0 || Input.GetAxis("Player" + (int)index + "Y") != 0) {
             Vector3 input = Input.GetAxis("Player" + (int)index + "X") * Camera.right + Input.GetAxis("Player" + (int)index + "Y") * Camera.up;
             input.y = 0;
@@ -97,12 +104,12 @@ public class Player : MonoBehaviour {
             transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z) + input * Time.deltaTime * walkSpeed;
         }
         velocity.y -= gravity * Time.deltaTime;
-        if (transform.position.y - 9 * Time.deltaTime < h + 3 && velocity.y < 0.001f) {
+        if (transform.position.y - 9 * Time.deltaTime < h + 2.5f && velocity.y < 0.001f) {
             jumping = false;
             velocity.y = 0;
         }
         transform.position += velocity * Time.deltaTime;
-        transform.position = new Vector3(transform.position.x, Mathf.Lerp(transform.position.y, Mathf.Max(transform.position.y, h + 3), 0.5f), transform.position.z);
+        transform.position = new Vector3(transform.position.x, Mathf.Lerp(transform.position.y, Mathf.Max(transform.position.y, h + 2.5f), 0.5f), transform.position.z);
         velocity -= velocity.normalized * Mathf.Min(5,velocity.magnitude) * Time.deltaTime;
 
         if (Input.GetButton("Player" + (int)index + "Jump") && !jumping) {

@@ -46,12 +46,10 @@ public class Floor : MonoBehaviour {
         AddIsland(new Island(13, 13, 20, 20));
 
         Player[] players = (Player[])GameObject.FindObjectsOfType(typeof(Player));
-        Debug.Log(players.Length);
         foreach (Player p in players) {
             p.makeHidden(p.transform, "Players");
-            Debug.Log("JOINED");
+            p.ali = true;
             if (!StartUp.joined[(int)((p.GetComponent<Player>()).index) - 1]) {
-                Debug.Log("DESTROYED");
                 Destroy(p.gameObject);
             }
         }
