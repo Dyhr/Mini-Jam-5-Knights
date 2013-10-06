@@ -1,16 +1,24 @@
 fileFormatVersion: 2
-guid: bd9049a1d510afc40a01587a9718a991
+guid: 4894809bcb9a60548b8d35e83b4cb105
 ModelImporter:
   serializedVersion: 15
   fileIDToRecycleName:
-    100000: //RootNode
-    400000: //RootNode
-    2300000: //RootNode
-    3300000: //RootNode
-    4300000: Cube
+    100000: cave
+    100002: //RootNode
+    100004: cave_high
+    400000: cave
+    400002: //RootNode
+    400004: cave_high
+    2300000: cave
+    2300002: cave_high
+    3300000: cave
+    3300002: cave_high
+    4300000: cave
+    4300002: cave_high
+    7400000: Default Take
     9500000: //RootNode
   materials:
-    importMaterials: 0
+    importMaterials: 1
     materialName: 0
     materialSearch: 1
   animations:
@@ -39,9 +47,9 @@ ModelImporter:
     secondaryUVHardAngle: 88
     secondaryUVPackMargin: 4
   tangentSpace:
-    normalSmoothAngle: 15
+    normalSmoothAngle: 60
     splitTangentsAcrossUV: 1
-    normalImportMode: 1
+    normalImportMode: 0
     tangentImportMode: 1
   importAnimation: 1
   copyAvatar: 0
