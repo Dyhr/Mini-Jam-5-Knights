@@ -14,7 +14,7 @@ public class StartUp : MonoBehaviour {
         indices = new int[]{1,2,0,3};
         for (int i = 0; i < 4; i++) {
             joined[i] = false;
-            playerMarkers[i] = (GameObject.CreatePrimitive(PrimitiveType.Capsule)).transform;
+            playerMarkers[i] = (Instantiate(Resources.Load("DummyPlayer")) as GameObject).transform;
             playerMarkers[i].localScale *= 4;
             playerMarkers[i].renderer.castShadows = false;
             switch (i) {
@@ -44,7 +44,12 @@ public class StartUp : MonoBehaviour {
                 joined[i] = !joined[i];
             playerMarkers[i].position = Camera.main.transform.position + Camera.main.transform.right * (-30 + i*20) - Camera.main.transform.up * 16 + Camera.main.transform.forward * 5;
             playerMarkers[i].rotation = Camera.main.transform.rotation;
+			playerMarkers[i].Rotate(0,180,0);
             playerMarkers[indices[i]].renderer.enabled = joined[i];
+			for(int j = 0;j < playerMarkers[indices[i]].childCount; j++){
+				if(playerMarkers[indices[i]].GetChild(j).renderer != null)
+            		playerMarkers[indices[i]].GetChild(j).renderer.enabled = joined[i];
+			}
         }
         if(Input.GetButton("Start")){
             int numPlayers = 0;
@@ -56,7 +61,7 @@ public class StartUp : MonoBehaviour {
                 return;
             Cam.alone = numPlayers < 2;
             for (int i = 0; i < 4; i++) {
-                playerMarkers[indices[i]].renderer.enabled = false;
+                Destroy(playerMarkers[i].gameObject);
             }
 
             GetComponent<Floor>().init();

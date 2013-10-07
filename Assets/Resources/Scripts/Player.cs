@@ -35,6 +35,8 @@ public class Player : MonoBehaviour {
     private float walkSpeed;
     private float turnSpeed;
     private float gravity = 18;
+	
+	public float victory = 0;
 
 	void Start () {
         ali = false;
@@ -94,6 +96,9 @@ public class Player : MonoBehaviour {
         Cam.players.Remove(this);
         if ((Cam.players.Count == 0 && Cam.alone) || (Cam.players.Count == 1 && !Cam.alone)) {
             Cam.destroy = 0;
+			foreach(Player p in Cam.players){
+				p.victory = 1;
+			}
         }
     }
     void OnTriggerEnter(Collider other) {
@@ -125,7 +130,13 @@ public class Player : MonoBehaviour {
 	void Update () {
         if (!ali)
             return;
-        Transform tile;
+		if(victory > 0){
+			transform.Rotate(new Vector3(0,60*victory*Time.deltaTime,0));
+			transform.Translate(new Vector3(0,0.5f*victory*Time.deltaTime,0));
+			victory += Time.deltaTime*10;
+			return;
+		}
+		Transform tile;
         float h;
         walkSpeed = defaultWalkSpeed;
         turnSpeed = defaultTurnSpeed;
@@ -157,7 +168,7 @@ public class Player : MonoBehaviour {
                 walkSpeed *= 0.3f;
                 turnSpeed *= 0.3f;
             }
-            //transform.LookAt(Vector3.Lerp(transform.position+transform.forward,transform.position + input,0.5f));
+			
 			if(input.magnitude>0)
             	transform.rotation = Quaternion.Lerp(transform.rotation,Quaternion.LookRotation(input),turnSpeed);
             transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z) + transform.forward * Time.deltaTime * walkSpeed;
@@ -177,8 +188,8 @@ public class Player : MonoBehaviour {
         }
         attackPause -= Time.deltaTime;
         if (Input.GetButtonDown("Player" + (int)index + "Attack") && attackTimer <= 0 && attackPause <= 0 && defendTimer <= 0) {
-            attackTimer = 0.5f;
-            attackPause = 0.9f;
+            attackTimer = 0.4f;
+            attackPause = 0.6f;
             attacking = true;
             SoundEffect s = (Instantiate(Resources.Load("SoundEff")) as GameObject).GetComponent<SoundEffect>();
             s.init("Sounds/swing_"+Mathf.FloorToInt(Random.value*3));
