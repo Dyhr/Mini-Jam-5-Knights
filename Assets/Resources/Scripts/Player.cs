@@ -31,7 +31,7 @@ public class Player : MonoBehaviour {
     public Vector3 velocity;
 
     public float defaultWalkSpeed = 5;
-    public float defaultTurnSpeed = 0.1f;
+    public float defaultTurnSpeed = 0.2f;
     private float walkSpeed;
     private float turnSpeed;
     private float gravity = 18;
@@ -97,7 +97,6 @@ public class Player : MonoBehaviour {
         }
     }
     void OnTriggerEnter(Collider other) {
-        Debug.Log("Log");
         if (!ali)
             return;
         if (other.tag == "Finish") {
@@ -114,8 +113,9 @@ public class Player : MonoBehaviour {
                     } else {
                         SoundEffect s = (Instantiate(Resources.Load("SoundEff")) as GameObject).GetComponent<SoundEffect>();
                         s.init("Sounds/defend_" + Mathf.FloorToInt(Random.value * 3));
-                        velocity = (transform.position - other.transform.parent.position).normalized * 3;
-                        other.transform.parent.GetComponent<Player>().velocity = -(transform.position - other.transform.parent.position).normalized * 5;
+                        velocity = (transform.position - other.transform.parent.position).normalized * 2;
+						other.transform.parent.GetComponent<Player>().attackPause = 1.5f;
+                        other.transform.parent.GetComponent<Player>().velocity = -(transform.position - other.transform.parent.position).normalized * 6;
                     }
                 }
             }
@@ -135,17 +135,12 @@ public class Player : MonoBehaviour {
                     if (!(Mathf.Floor(transform.position.x) + i > 0 && Mathf.Floor(transform.position.z) + j > 0 && Mathf.Floor(transform.position.x) + i < Floor.width && Mathf.Floor(transform.position.z) + j < Floor.height))
                         continue;
                     if (Floor.transforms[Mathf.FloorToInt(transform.position.x) + i, Mathf.FloorToInt(transform.position.z) + j].position.y > max)
-                        max = Floor.transforms[Mathf.FloorToInt(transform.position.x) + j, Mathf.FloorToInt(transform.position.z) + j].position.y;
+                  		max = Floor.transforms[Mathf.FloorToInt(transform.position.x) + i, Mathf.FloorToInt(transform.position.z) + j].position.y;
                 }
             }
             h = max;
         } else {
             h = -1;
-        }
-        if (true) {
-
-        } else {
-            
         }
         if (Input.GetAxis("Player" + (int)index + "X") != 0 || Input.GetAxis("Player" + (int)index + "Y") != 0) {
             Vector3 input = Input.GetAxis("Player" + (int)index + "X") * Cam.right + Input.GetAxis("Player" + (int)index + "Y") * Cam.up;
@@ -159,7 +154,8 @@ public class Player : MonoBehaviour {
                 turnSpeed *= 0.3f;
             }
             //transform.LookAt(Vector3.Lerp(transform.position+transform.forward,transform.position + input,0.5f));
-            transform.rotation = Quaternion.Lerp(transform.rotation,Quaternion.LookRotation(input),turnSpeed);
+			if(input.magnitude>0)
+            	transform.rotation = Quaternion.Lerp(transform.rotation,Quaternion.LookRotation(input),turnSpeed);
             transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z) + transform.forward * Time.deltaTime * walkSpeed;
         }
         velocity.y -= gravity * Time.deltaTime;
@@ -196,13 +192,13 @@ public class Player : MonoBehaviour {
             sword.localScale = swordScaOri;
             sword.localPosition = swordPosOri;
         }
-        if (Input.GetButton("Player" + (int)index + "Defend") && !attacking) {
-            defendTimer = 0.4f;
+        if (Input.GetButton("Player" + (int)index + "Defend") && !attacking && attackPause <= 0) {
+            defendTimer = 0.25f;
             defending = true;
         } else {
             defending = false;
         }
-        if (defending || defendTimer > 0) {
+        if (defending || defendTimer > 0 && attackPause <= 0) {
             defending = true;
             defendTimer -= Time.deltaTime;
             shield.localEulerAngles = shieldRotOri + new Vector3(0, 90, 0);
