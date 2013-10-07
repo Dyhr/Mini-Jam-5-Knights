@@ -35,6 +35,8 @@ public class Player : MonoBehaviour {
     private float walkSpeed;
     private float turnSpeed;
     private float gravity = 18;
+	
+	public float victory = 0;
 
 	void Start () {
         ali = false;
@@ -94,6 +96,9 @@ public class Player : MonoBehaviour {
         Cam.players.Remove(this);
         if ((Cam.players.Count == 0 && Cam.alone) || (Cam.players.Count == 1 && !Cam.alone)) {
             Cam.destroy = 0;
+			foreach(Player p in Cam.players){
+				p.victory = 1;
+			}
         }
     }
     void OnTriggerEnter(Collider other) {
@@ -125,6 +130,12 @@ public class Player : MonoBehaviour {
 	void Update () {
         if (!ali)
             return;
+		if(victory > 0){
+			transform.Rotate(new Vector3(0,90*victory*Time.deltaTime,0));
+			transform.Translate(new Vector3(0,0.5f*victory*Time.deltaTime,0));
+			victory += Time.deltaTime*10;
+			return;
+		}
         float h;
         walkSpeed = defaultWalkSpeed;
         turnSpeed = defaultTurnSpeed;
