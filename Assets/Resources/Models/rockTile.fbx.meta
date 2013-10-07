@@ -7,18 +7,33 @@ ModelImporter:
     100002: //RootNode
     100004: rockTile
     100006: rockTile_high
+    100008: rockTile_high_MeshPart0
+    100010: rockTile_high_MeshPart1
+    100012: rockTile_high_MeshPart2
     400000: Camera
     400002: //RootNode
     400004: rockTile
     400006: rockTile_high
+    400008: rockTile_high_MeshPart0
+    400010: rockTile_high_MeshPart1
+    400012: rockTile_high_MeshPart2
     2300000: rockTile
     2300002: rockTile_high
     2300004: //RootNode
+    2300006: rockTile_high_MeshPart0
+    2300008: rockTile_high_MeshPart1
+    2300010: rockTile_high_MeshPart2
     3300000: rockTile
     3300002: rockTile_high
     3300004: //RootNode
+    3300006: rockTile_high_MeshPart0
+    3300008: rockTile_high_MeshPart1
+    3300010: rockTile_high_MeshPart2
     4300000: rockTile
     4300002: rockTile_high
+    4300004: rockTile_high_MeshPart0
+    4300006: rockTile_high_MeshPart1
+    4300008: rockTile_high_MeshPart2
     7400000: Default Take
     9500000: //RootNode
   materials:
