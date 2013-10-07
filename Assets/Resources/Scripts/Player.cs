@@ -125,6 +125,7 @@ public class Player : MonoBehaviour {
 	void Update () {
         if (!ali)
             return;
+        Transform tile;
         float h;
         walkSpeed = defaultWalkSpeed;
         turnSpeed = defaultTurnSpeed;
@@ -134,8 +135,11 @@ public class Player : MonoBehaviour {
                 for (int j = -1; j <= 1; j++) {
                     if (!(Mathf.Floor(transform.position.x) + i > 0 && Mathf.Floor(transform.position.z) + j > 0 && Mathf.Floor(transform.position.x) + i < Floor.width && Mathf.Floor(transform.position.z) + j < Floor.height))
                         continue;
-                    if (Floor.transforms[Mathf.FloorToInt(transform.position.x) + i, Mathf.FloorToInt(transform.position.z) + j].position.y > max)
+					tile = Floor.transforms[Mathf.FloorToInt(transform.position.x) + i, Mathf.FloorToInt(transform.position.z) + j];
+                    if (tile.position.y > max && 
+						Vector3.Distance(tile.position-Vector3.up*tile.position.y,transform.position-Vector3.up*transform.position.y) < 1){
                   		max = Floor.transforms[Mathf.FloorToInt(transform.position.x) + i, Mathf.FloorToInt(transform.position.z) + j].position.y;
+					}
                 }
             }
             h = max;
