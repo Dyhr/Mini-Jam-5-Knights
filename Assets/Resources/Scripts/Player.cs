@@ -183,7 +183,7 @@ public class Player : MonoBehaviour {
         velocity -= velocity.normalized * Mathf.Min(5,velocity.magnitude) * Time.deltaTime;
 
         if (Input.GetButton("Player" + (int)index + "Jump") && !jumping) {
-            velocity.y = 12;
+            velocity.y = 9;
             jumping = true;
         }
         attackPause -= Time.deltaTime;
@@ -196,16 +196,19 @@ public class Player : MonoBehaviour {
         }
         if (attacking || attackTimer > 0) {
             attackTimer -= Time.deltaTime;
-            sword.localEulerAngles = swordRotOri + new Vector3(90, Mathf.Sin((1-attackTimer) * 10) * 90, 0);
-            sword.localScale = swordScaOri * 1.1f;
+            sword.localEulerAngles = 
+				Vector3.Lerp(sword.localEulerAngles,swordRotOri + new Vector3(89, Mathf.Sin((0.4f-attackTimer*0.5f) * 20) * 90, 0),1f);
+            //sword.localEulerAngles = swordRotOri + new Vector3(Mathf.Sin((0.4f-attackTimer) * 10) * 90,-90+ Mathf.Sin((0.4f-attackTimer) * 10) * 90, 0);
+            sword.localScale = Vector3.Lerp(sword.localScale,swordScaOri * 1.1f,0.4f);
+            sword.localPosition = Vector3.Lerp(sword.localPosition,swordPosOri + Vector3.forward * 0.2f,0.4f);
             if (attackTimer <= 0) {
                 attackTimer = 0;
                 attacking = false;
             }
         } else {
-            sword.localEulerAngles = swordRotOri;
-            sword.localScale = swordScaOri;
-            sword.localPosition = swordPosOri;
+            sword.localEulerAngles = Vector3.Lerp(sword.localEulerAngles,swordRotOri,0.4f);
+            sword.localScale = Vector3.Lerp(sword.localScale,swordScaOri,0.4f);
+            sword.localPosition = Vector3.Lerp(sword.localPosition,swordPosOri,0.4f);
         }
         if (Input.GetButton("Player" + (int)index + "Defend") && !attacking && attackPause <= 0) {
             defendTimer = 0.25f;
@@ -216,17 +219,19 @@ public class Player : MonoBehaviour {
         if (defending || defendTimer > 0 && attackPause <= 0) {
             defending = true;
             defendTimer -= Time.deltaTime;
-            shield.localEulerAngles = shieldRotOri + new Vector3(0, 90, 0);
-            shield.localScale = shieldScaOri * 2.4f;
-            shield.localPosition = shieldPosOri + new Vector3(0.5f, 0, 0.5f);
+            shield.localEulerAngles = Vector3.Lerp(shield.localEulerAngles,shieldRotOri + new Vector3(0, 80, 0),0.4f);
+            shield.localScale = Vector3.Lerp(shield.localScale,shieldScaOri * 1.8f,0.4f);
+            shield.localPosition = Vector3.Lerp(shield.localPosition,new Vector3(0, 0, 0.5f),0.4f);
+            sword.localPosition = Vector3.Lerp(sword.localPosition,swordPosOri + 
+				Vector3.right * 0.3f + Vector3.down * 0.2f + Vector3.back * 0.1f,0.4f);
             if (defendTimer <= 0) {
                 defendTimer = 0;
                 defending = false;
             }
         } else {
-            shield.localEulerAngles = shieldRotOri;
-            shield.localScale = shieldScaOri;
-            shield.localPosition = shieldPosOri;
+            shield.localEulerAngles = Vector3.Lerp(shield.localEulerAngles,shieldRotOri,0.4f);
+            shield.localScale = Vector3.Lerp(shield.localScale,shieldScaOri,0.4f);
+            shield.localPosition = Vector3.Lerp(shield.localPosition,shieldPosOri,0.4f);
         }
 
         if (transform.position.y < -5)
