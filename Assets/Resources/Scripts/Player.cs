@@ -113,11 +113,11 @@ public class Player : MonoBehaviour {
                     Instantiate(Resources.Load("HitParticle"), (transform.position + other.transform.parent.position) / 2, Quaternion.identity);
                     if (!(defending && Vector3.Angle(transform.forward, transform.position - other.transform.parent.position) < 180)) {
                         SoundEffect s = (Instantiate(Resources.Load("SoundEff")) as GameObject).GetComponent<SoundEffect>();
-                        s.init("Sounds/hit_" + Mathf.FloorToInt(Random.value * 3));
+                        s.init("Sounds/hit_" + Mathf.CeilToInt(Random.value * 3));
                         velocity = (transform.position - other.transform.parent.position).normalized * 8;
                     } else {
                         SoundEffect s = (Instantiate(Resources.Load("SoundEff")) as GameObject).GetComponent<SoundEffect>();
-                        s.init("Sounds/defend_" + Mathf.FloorToInt(Random.value * 3));
+                        s.init("Sounds/defend_" + Mathf.CeilToInt(Random.value * 3));
                         velocity = (transform.position - other.transform.parent.position).normalized * 2;
 						other.transform.parent.GetComponent<Player>().attackPause = 1.5f;
                         other.transform.parent.GetComponent<Player>().velocity = -(transform.position - other.transform.parent.position).normalized * 6;
@@ -192,7 +192,8 @@ public class Player : MonoBehaviour {
             attackPause = 0.6f;
             attacking = true;
             SoundEffect s = (Instantiate(Resources.Load("SoundEff")) as GameObject).GetComponent<SoundEffect>();
-            s.init("Sounds/swing_"+Mathf.FloorToInt(Random.value*3));
+            s.init("Sounds/swing_"+(Mathf.CeilToInt(Random.value*3)));
+			
         }
         if (attacking || attackTimer > 0) {
             attackTimer -= Time.deltaTime;
