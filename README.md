@@ -64,7 +64,6 @@ In Progress of this project we'll like to thank the following commercial product
   <ul>
   	<li>Ferrero Giotto</li>
   	<li>Generic Branded Chocolate Swiss Roll</li>
-  	<li></li>
   </ul>
 </ul>
 
