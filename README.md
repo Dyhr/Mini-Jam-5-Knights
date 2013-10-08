@@ -38,7 +38,6 @@ Notes
 <ul>
 	<li>The Event took place at Aalborg University, Copenhagen</li>
   <li>We've used Unity - As it's great for prototyping fast.</li>
-  <li></li>
   <li>1 Programmer, 1 Graphicer (2D/3D), 1 Idea Guy.</li>
   <li>Nearly all we had in mind in terms of features got done in time.</li>
 </ul>
