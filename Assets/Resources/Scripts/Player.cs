@@ -82,12 +82,12 @@ public class Player : MonoBehaviour {
                 break;
         }
 
-        makeHidden(transform, "Hidden");
+        changeLayer(transform, "Hidden");
 	}
-    public void makeHidden(Transform t, string layer) {
+    public void changeLayer(Transform t, string layer) {
         t.gameObject.layer = LayerMask.NameToLayer(layer);
         for (int i = 0; i < t.childCount; i++) {
-            makeHidden(t.GetChild(i), layer);
+            changeLayer(t.GetChild(i), layer);
         }
     }
 
