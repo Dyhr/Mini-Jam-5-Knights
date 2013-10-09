@@ -20,11 +20,11 @@ The last to survive the level wins, and the round restarts.
 
 Controls are the following:
 <ul>
-	<li>Left Analog Stick - Movement</li>
-	<li>Button A - Attacking / Join Game</li>
-	<li>Button B - Blocking</li>
-	<li>Button X - Jumping</li>
-	<li>Start - Start Game</li>
+  <li>Left Analog Stick - Movement</li>
+  <li>Button A - Attacking / Join Game</li>
+  <li>Button B - Blocking</li>
+  <li>Button X - Jumping</li>
+  <li>Start - Start Game</li>
 </ul>
 The Controls have been made in mind of playing from 2-4 players, each with their own Microsoft Xbox Controller attached to the Computer running the Game.
 
@@ -43,16 +43,16 @@ Notes
   <li>Nearly everything we had in mind in terms of features got done in time.</li>
 </ul>
 
-In Progress of this project we'll like to thank the following commercial products:
+We would like to thank the following commercial products:
 <ul>
-	<li>Liquids</li>
-	<ul>
-		<li>Monster Energy</li>
-		<li>Nestea Peach</li>
-		<li>Mysterious Drink with Blueberry Flavour</li>
-		<li>Mysterious Drink with Strawberry Flavour</li>
-		<li>Toms Chocolate Milk</li>
-	</ul>
+  <li>Liquids</li>
+  <ul>
+    <li>Monster Energy</li>
+    <li>Nestea Peach</li>
+    <li>Mysterious Drink with Blueberry Flavour</li>
+    <li>Mysterious Drink with Strawberry Flavour</li>
+    <li>Toms Chocolate Milk</li>
+  </ul>
   <li>Chips:</li>
   <ul>
     <li>Doritos Nacho Cheese</li>
@@ -62,8 +62,8 @@ In Progress of this project we'll like to thank the following commercial product
   </ul>
   <li>Other:</li>
   <ul>
-  	<li>Ferrero Giotto</li>
-  	<li>Generic Branded Chocolate Swiss Roll</li>
+    <li>Ferrero Giotto</li>
+    <li>Generic Branded Chocolate Swiss Roll</li>
   </ul>
 </ul>
 
