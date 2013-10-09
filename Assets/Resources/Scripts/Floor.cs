@@ -8,14 +8,16 @@ public class Floor : MonoBehaviour {
     public static Transform[,] transforms;
     public static float[,] positions;
     public static float[,] jitter;
-    public static uint width;
-    public static uint height;
+    public static int width;
+    public static int height;
     public Transform tile;
     public float platformInit = 2;
     private Vector2 lavadir = Vector2.up;
+	public bool doInit = false;
 
     void Start() {
-        
+        if(doInit)
+			init();
     }
     public void init() {
         if (width == 0) width = 32;
@@ -48,7 +50,7 @@ public class Floor : MonoBehaviour {
 
         Player[] players = (Player[])GameObject.FindObjectsOfType(typeof(Player));
         foreach (Player p in players) {
-            p.makeHidden(p.transform, "Players");
+            p.changeLayer(p.transform, "Players");
             p.ali = true;
             if (!StartUp.joined[(int)((p.GetComponent<Player>()).index) - 1]) {
                 Destroy(p.gameObject);
