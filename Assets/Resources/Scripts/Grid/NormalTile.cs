@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
+using grid;
 
-namespace grid {
-	public class NormalTile : Tile  {
-		
-	}
+public class NormalTile : Tile  {
+	
+	
 }

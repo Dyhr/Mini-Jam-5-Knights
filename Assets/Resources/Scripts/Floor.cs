@@ -33,8 +33,8 @@ public class Floor : MonoBehaviour {
                 g.transform.Rotate(0, 0, Mathf.Floor(Random.value * 8) * 45);
                 g.renderer.material.color = Color.Lerp(Color.Lerp(Color.white, Color.white * 0.2f, Mathf.PerlinNoise(g.transform.position.x / 4, g.transform.position.z / 4)),
                     Color.Lerp(Color.white, Color.white * 0.2f, Random.value), 0.4f);
-                g.AddComponent<Tile>();
-                g.GetComponent<Tile>().init(i, j);
+                g.AddComponent<TileOld>();
+                g.GetComponent<TileOld>().init(i, j);
                 transforms[i, j] = g.transform;
                 positions[i, j] = transform.position.y - 5 + Mathf.PerlinNoise(g.transform.position.x / 2, g.transform.position.z / 2);
                 jitter[i, j] = 0.1f;

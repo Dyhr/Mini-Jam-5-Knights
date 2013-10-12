@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace grid {
 	public class Grid : MonoBehaviour {
@@ -11,7 +12,7 @@ namespace grid {
 		private Color gizmoWireColor = Color.white * 0.8f;
 		private Color gizmoDisplacedColor = Color.white * 0.5f;
 		
-		// Settings:
+		// Properties:
 		public int width = 1;
 		public int height = 1;
 		public float displacement = 2;
@@ -19,7 +20,7 @@ namespace grid {
 		
 		// Variables:
 		private Vector3 tileSize;
-		private float[] grid;
+		private Transform[] grid;
 		
 		// Init:
 		private void Start () {
@@ -36,23 +37,22 @@ namespace grid {
 			
 			// Setup the tiles:
 			LoadTileSize();
-			grid = new float[width * height];
+			grid = new Transform[width * height];
 			int i = grid.Length;
-			Transform t;
 			while(i-- > 0){
-				t = Instantiate(tile) as Transform;
-				t.position = transform.position + new Vector3(
-					(i%width - ((float)width/2) + 0.5f) * tileSize.x,0,
-					((int)(i/width) - ((float)height/2) + 0.5f) * tileSize.y);
-				t.parent = transform;
-				t.GetComponent<Tile>().upperPosition = t.position;
-				t.GetComponent<Tile>().lowerPosition = t.position - Vector3.up*displacement;
+				AddTile(i);
 			}
 		}
 		
 		// Public functions:
-		public void AddController(){
-			
+		public void AddController(Controller controller){
+			int i = grid.Length;
+			while(i-- > 0){
+				if(grid[i] == null){
+					AddTile(i);
+				}
+				grid[i].GetComponent<Tile>().AddController(controller);
+			}
 		}
 		
 		// Private functions:
@@ -64,6 +64,21 @@ namespace grid {
 			} else {
 				tileSize = Vector3.one;
 			}
+		}
+		private void AddTile(int i) {
+			Transform t = Instantiate(tile) as Transform;
+			t.position = transform.position + new Vector3(
+					(i%width - ((float)width/2) + 0.5f) * tileSize.x,0,
+					((int)(i/width) - ((float)height/2) + 0.5f) * tileSize.y);
+			t.parent = transform;
+			t.GetComponent<Tile>().Init(i,t.position - Vector3.up*displacement, t.position);
+			t.position -= Vector3.up*displacement;
+			
+			grid[i] = t;
+		}
+		private void HideTile(int index){
+			Destroy(grid[index].gameObject);
+			grid[index] = null;
 		}
 		
 		// Gizmo functions:
@@ -92,14 +107,84 @@ namespace grid {
 	}
 	
 	public abstract class Tile : MonoBehaviour {
-		internal Vector3 upperPosition;
-		internal Vector3 lowerPosition;
 		
+		// Properties:
+		private int index;
+		private Vector3 upperPosition;
+		private Vector3 lowerPosition;
+		
+		// Variables:
+		private List<Controller> controllers;
+		
+		// Internals:
+		internal void Init(int index, Vector3 lowerPosition, Vector3 upperPosition){
+			this.index = index;
+			this.lowerPosition = lowerPosition;
+			this.upperPosition = upperPosition;
+			
+			this.controllers = new List<Controller>();
+		}
+		internal void AddController(Controller controller){
+			if(controllers == null){
+				controllers = new List<Controller>();
+			}
+			if(controller.GetInfluence(upperPosition) > 0){
+				controllers.Add(controller);
+			}
+		}
+		
+		// Private functions:
 		private void Update(){
-			transform.position = Vector3.Lerp(transform.position,lowerPosition,0.3f);
+			float sum = 0;
+			int i = controllers.Count;
+			while(i-- > 0){
+				sum += controllers[i].GetInfluence(upperPosition);
+			}
+			if(sum == 0){
+				transform.position = Vector3.Lerp(transform.position,lowerPosition,0.3f);
+			} else {
+				sum /= controllers.Count;
+				transform.position = Vector3.Lerp(transform.position,Vector3.Lerp(lowerPosition,upperPosition,sum),0.3f);
+			}
+			
+			if(Vector3.Distance(transform.position,lowerPosition) < 0.0001f && controllers.Count == 0){
+				transform.parent.SendMessage("HideTile", index);
+			}
 		}
 	}
 	
-	public abstract class Controller {
+	public abstract class Controller : MonoBehaviour {
+		
+		// Properties:
+		protected float radius = 3;
+		
+		// Internals:
+		internal abstract float GetInfluence(Vector3 pos);
+		
+		
+		// Gizmo functions:
+		private void OnDrawGizmos() {
+			Gizmos.color = Color.black;
+			float inc = (Mathf.PI*2)/180;
+			float angle = Mathf.PI*2;
+			while(angle >= 0){
+				Gizmos.DrawLine(transform.position + new Vector3(Mathf.Cos(angle),0,Mathf.Sin(angle))*radius,
+						transform.position + new Vector3(Mathf.Cos(angle-inc),0,Mathf.Sin(angle-inc))*radius);
+				angle -= inc;
+			}
+			angle = Mathf.PI*2;
+			while(angle >= 0){
+				Gizmos.DrawLine(transform.position + Vector3.up*3 + new Vector3(Mathf.Cos(angle),0,Mathf.Sin(angle))*radius,
+						transform.position + Vector3.up*3 + new Vector3(Mathf.Cos(angle-inc),0,Mathf.Sin(angle-inc))*radius);
+				angle -= inc;
+			}
+			inc = (Mathf.PI*2)/8;
+			angle = Mathf.PI*2;
+			while(angle >= 0){
+				Gizmos.DrawLine(transform.position + new Vector3(Mathf.Cos(angle),0,Mathf.Sin(angle))*radius,
+						transform.position + Vector3.up*3 + new Vector3(Mathf.Cos(angle),0,Mathf.Sin(angle))*radius);
+				angle -= inc;
+			}
+		}
 	}
 }

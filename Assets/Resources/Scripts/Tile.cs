@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Tile : MonoBehaviour {
+public class TileOld : MonoBehaviour {
     private int i, j;
     private bool inited = false;
 
