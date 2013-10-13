@@ -6,19 +6,19 @@ namespace grid {
 	public class Grid : MonoBehaviour {
 		
 		// Constants:
-		private float gizmoSolidAlpha = 0.5f;
+		private float gizmoSolidAlpha = 0.7f;
 		private Color gizmoSolidColor = Color.white * 0.7f;
-		private float gizmoWireAlpha = 0.5f;
+		private float gizmoWireAlpha = 0.7f;
 		private Color gizmoWireColor = Color.white * 0.8f;
 		private Color gizmoDisplacedColor = Color.white * 0.5f;
 		
 		// Properties:
-		public int width = 1;
-		public int height = 1;
-		public float displacement = 2;
 		public Transform tile = null;
 		
 		// Variables:
+		private int width = 1;
+		private int height = 1;
+		private float displacement = 2;
 		private Vector3 tileSize;
 		private Transform[] grid;
 		
@@ -35,9 +35,14 @@ namespace grid {
 				throw(new UnityException("Grid: Tile doesn't contain a tile script."));
 			}
 			
+			// Setup the grid:
+			width = Mathf.Max(0,Mathf.FloorToInt(transform.localScale.x));
+			height = Mathf.Max(0,Mathf.FloorToInt(transform.localScale.z));
+			displacement = transform.localScale.y;
+			grid = new Transform[width * height];
+			
 			// Setup the tiles:
 			LoadTileSize();
-			grid = new Transform[width * height];
 			int i = grid.Length;
 			while(i-- > 0){
 				AddTile(i);
@@ -46,6 +51,10 @@ namespace grid {
 		
 		// Public functions:
 		public void AddController(Controller controller){
+			if(grid == null){
+				Start();
+			}
+			
 			int i = grid.Length;
 			while(i-- > 0){
 				if(grid[i] == null){
@@ -71,14 +80,10 @@ namespace grid {
 					(i%width - ((float)width/2) + 0.5f) * tileSize.x,0,
 					((int)(i/width) - ((float)height/2) + 0.5f) * tileSize.y);
 			t.parent = transform;
-			t.GetComponent<Tile>().Init(i,t.position - Vector3.up*displacement, t.position);
+			t.GetComponent<Tile>().Init(t.position - Vector3.up*displacement, t.position);
 			t.position -= Vector3.up*displacement;
 			
 			grid[i] = t;
-		}
-		private void HideTile(int index){
-			Destroy(grid[index].gameObject);
-			grid[index] = null;
 		}
 		
 		// Gizmo functions:
@@ -86,6 +91,10 @@ namespace grid {
 			if(tileSize.magnitude == 0) {
 				LoadTileSize();
 			}
+			width = Mathf.Max(0,Mathf.FloorToInt(transform.localScale.x));
+			height = Mathf.Max(0,Mathf.FloorToInt(transform.localScale.z));
+			displacement = transform.localScale.y;
+			
 			gizmoSolidColor.a = gizmoSolidAlpha;
 			Gizmos.color = gizmoSolidColor;
 			Gizmos.DrawCube(transform.position,
@@ -109,20 +118,20 @@ namespace grid {
 	public abstract class Tile : MonoBehaviour {
 		
 		// Properties:
-		private int index;
 		private Vector3 upperPosition;
 		private Vector3 lowerPosition;
 		
 		// Variables:
 		private List<Controller> controllers;
+		private float jitter;
 		
 		// Internals:
-		internal void Init(int index, Vector3 lowerPosition, Vector3 upperPosition){
-			this.index = index;
+		internal void Init(Vector3 lowerPosition, Vector3 upperPosition){
 			this.lowerPosition = lowerPosition;
 			this.upperPosition = upperPosition;
 			
 			this.controllers = new List<Controller>();
+			this.jitter = 0.1f;
 		}
 		internal void AddController(Controller controller){
 			if(controllers == null){
@@ -136,55 +145,44 @@ namespace grid {
 		// Private functions:
 		private void Update(){
 			float sum = 0;
+			float inf;
 			int i = controllers.Count;
 			while(i-- > 0){
-				sum += controllers[i].GetInfluence(upperPosition);
+				inf = controllers[i].GetInfluence(upperPosition);
+				if(inf > 0) {
+					sum += inf;
+				} else {
+					controllers.RemoveAt(i);
+				}
 			}
+			
 			if(sum == 0){
 				transform.position = Vector3.Lerp(transform.position,lowerPosition,0.3f);
 			} else {
 				sum /= controllers.Count;
-				transform.position = Vector3.Lerp(transform.position,Vector3.Lerp(lowerPosition,upperPosition,sum),0.3f);
+				transform.position = Vector3.Lerp(transform.position,Vector3.Lerp(Vector3.Lerp(lowerPosition,upperPosition,sum),transform.position+Vector3.up*(Random.value-0.5f),jitter),0.3f);
 			}
 			
 			if(Vector3.Distance(transform.position,lowerPosition) < 0.0001f && controllers.Count == 0){
-				transform.parent.SendMessage("HideTile", index);
+				Destroy(gameObject);
 			}
 		}
 	}
 	
 	public abstract class Controller : MonoBehaviour {
 		
-		// Properties:
-		protected float radius = 3;
+		// Variables:
+		private Vector3 prevPosition = Vector3.zero;
 		
 		// Internals:
 		internal abstract float GetInfluence(Vector3 pos);
 		
-		
-		// Gizmo functions:
-		private void OnDrawGizmos() {
-			Gizmos.color = Color.black;
-			float inc = (Mathf.PI*2)/180;
-			float angle = Mathf.PI*2;
-			while(angle >= 0){
-				Gizmos.DrawLine(transform.position + new Vector3(Mathf.Cos(angle),0,Mathf.Sin(angle))*radius,
-						transform.position + new Vector3(Mathf.Cos(angle-inc),0,Mathf.Sin(angle-inc))*radius);
-				angle -= inc;
+		// Private functions:
+		private void Update(){
+			if(transform.position != prevPosition){
+				GameObject.Find("Grid").GetComponent<Grid>().AddController(this);
 			}
-			angle = Mathf.PI*2;
-			while(angle >= 0){
-				Gizmos.DrawLine(transform.position + Vector3.up*3 + new Vector3(Mathf.Cos(angle),0,Mathf.Sin(angle))*radius,
-						transform.position + Vector3.up*3 + new Vector3(Mathf.Cos(angle-inc),0,Mathf.Sin(angle-inc))*radius);
-				angle -= inc;
-			}
-			inc = (Mathf.PI*2)/8;
-			angle = Mathf.PI*2;
-			while(angle >= 0){
-				Gizmos.DrawLine(transform.position + new Vector3(Mathf.Cos(angle),0,Mathf.Sin(angle))*radius,
-						transform.position + Vector3.up*3 + new Vector3(Mathf.Cos(angle),0,Mathf.Sin(angle))*radius);
-				angle -= inc;
-			}
+			prevPosition = transform.position;
 		}
 	}
 }
