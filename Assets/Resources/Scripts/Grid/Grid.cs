@@ -144,6 +144,11 @@ namespace grid {
 		
 		// Private functions:
 		private void Update(){
+			if(controllers == null){
+				controllers = new List<Controller>();
+			}
+			
+			// Sum up the influence of nearby controllers:
 			float sum = 0;
 			float inf;
 			int i = controllers.Count;
@@ -152,17 +157,19 @@ namespace grid {
 				if(inf > 0) {
 					sum += inf;
 				} else {
-					controllers.RemoveAt(i);
+					controllers.RemoveAt(i); // Remove controller if tile is outside it's influence
 				}
 			}
 			
 			if(sum == 0){
 				transform.position = Vector3.Lerp(transform.position,lowerPosition,0.3f);
 			} else {
+				// Take the average move tile to corresponding height:
 				sum /= controllers.Count;
 				transform.position = Vector3.Lerp(transform.position,Vector3.Lerp(Vector3.Lerp(lowerPosition,upperPosition,sum),transform.position+Vector3.up*(Random.value-0.5f),jitter),0.3f);
 			}
 			
+			// Destroy the tile if it's outside any influence and it's at 0 to preserve some cpu:
 			if(Vector3.Distance(transform.position,lowerPosition) < 0.0001f && controllers.Count == 0){
 				Destroy(gameObject);
 			}
