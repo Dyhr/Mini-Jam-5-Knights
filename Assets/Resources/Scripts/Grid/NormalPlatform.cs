@@ -1,14 +1,15 @@
 ﻿using UnityEngine;
 using System.Collections;
-using grid;
+using Grid;
 
+[AddComponentMenu("Game/Platform/Normal")]
 public class NormalPlatform : Controller {
 		
 	// Properties:
 	public float radius = 3;
 	
 	internal override float GetInfluence (Vector3 pos){
-		return Mathf.Max(0,radius - Vector3.Distance(pos,transform.position))/radius;
+		return Mathf.Max(0,radius - Vector3.Distance(pos,transform.position))/radius; // TODO lock to y axis
 	}
 	
 	// Gizmo functions:

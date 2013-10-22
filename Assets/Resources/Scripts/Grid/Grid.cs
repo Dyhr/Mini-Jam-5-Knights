@@ -2,8 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace grid {
-	public class Grid : MonoBehaviour {
+namespace Grid {
+	
+	[AddComponentMenu("Game/Grid")]
+	public sealed class Grid : MonoBehaviour {
 		
 		// Constants:
 		private float gizmoSolidAlpha = 0.7f;
@@ -13,9 +15,10 @@ namespace grid {
 		private Color gizmoDisplacedColor = Color.white * 0.5f;
 		
 		// Properties:
-		public Transform tile = null;
+		public bool hideLowTiles = true;
 		
 		// Variables:
+		private Generator gen;
 		private int width = 1;
 		private int height = 1;
 		private float displacement = 2;
@@ -24,25 +27,15 @@ namespace grid {
 		
 		// Init:
 		private void Start () {
-			// Check for invalid parameters:
-			if(width <= 0 || height <= 0){
-				throw(new UnityException("Grid: Invalid size."));
-			}
-			if(tile == null){
-				throw(new UnityException("Grid: No tile selected."));
-			}
-			if(tile.GetComponent<Tile>() == null){
-				throw(new UnityException("Grid: Tile doesn't contain a tile script."));
-			}
-			
 			// Setup the grid:
-			width = Mathf.Max(0,Mathf.FloorToInt(transform.localScale.x));
-			height = Mathf.Max(0,Mathf.FloorToInt(transform.localScale.z));
+			width = Mathf.Max(1,Mathf.FloorToInt(transform.localScale.x));
+			height = Mathf.Max(1,Mathf.FloorToInt(transform.localScale.z));
 			displacement = transform.localScale.y;
 			grid = new Transform[width * height];
 			
 			// Setup the tiles:
-			LoadTileSize();
+			gen = GetGenerator();
+			tileSize = gen.GetTileSize();
 			int i = grid.Length;
 			while(i-- > 0){
 				AddTile(i);
@@ -65,17 +58,22 @@ namespace grid {
 		}
 		
 		// Private functions:
-		private void LoadTileSize(){
-			if(tile != null) {
-				tileSize = new Vector3(tile.GetComponent<BoxCollider>().size.x * tile.lossyScale.x,
-						tile.GetComponent<BoxCollider>().size.y * tile.lossyScale.y,
-						tile.GetComponent<BoxCollider>().size.z * tile.lossyScale.z);
-			} else {
-				tileSize = Vector3.one;
+		private Generator GetGenerator(){
+			Generator[] gens = GetComponents<Generator>();
+			if(gens.Length == 0){
+				throw(new UnityException("Grid: No generator found."));
+			} else if(gens.Length > 1){
+				throw(new UnityException("Grid: Too many generators found."));
 			}
+			gens[0].Init();
+			return gens[0];
+		}
+		private Vector2 Convert(int i) {
+			return new Vector2((i%width - ((float)width/2) + 0.5f) * tileSize.x,
+					((int)(i/width) - ((float)height/2) + 0.5f) * tileSize.y);
 		}
 		private void AddTile(int i) {
-			Transform t = Instantiate(tile) as Transform;
+			Transform t = Instantiate(gen.GetTile(new Vector2(tileSize.x,tileSize.z),Convert(i))) as Transform;
 			t.position = transform.position + new Vector3(
 					(i%width - ((float)width/2) + 0.5f) * tileSize.x,0,
 					((int)(i/width) - ((float)height/2) + 0.5f) * tileSize.y);
@@ -88,8 +86,11 @@ namespace grid {
 		
 		// Gizmo functions:
 		private void OnDrawGizmos() {
+			if(gen == null){
+				gen = GetGenerator();
+			}
 			if(tileSize.magnitude == 0) {
-				LoadTileSize();
+				tileSize = gen.GetTileSize();
 			}
 			width = Mathf.Max(0,Mathf.FloorToInt(transform.localScale.x));
 			height = Mathf.Max(0,Mathf.FloorToInt(transform.localScale.z));
@@ -101,8 +102,11 @@ namespace grid {
 					new Vector3(tileSize.x * width, tileSize.z, tileSize.y * height));
 		}
 		private void OnDrawGizmosSelected() {
+			if(gen == null){
+				gen = GetGenerator();
+			}
 			if(tileSize.magnitude == 0) {
-				LoadTileSize();
+				tileSize = gen.GetTileSize();
 			}
 			gizmoWireColor.a = gizmoWireAlpha;
 			gizmoDisplacedColor.a = gizmoWireAlpha;
@@ -113,6 +117,12 @@ namespace grid {
 			Gizmos.DrawWireCube(transform.position - Vector3.up*displacement,
 					new Vector3(tileSize.x * width, tileSize.z, tileSize.y * height));
 		}
+	}
+	
+	public abstract class Generator : MonoBehaviour {
+		public abstract void Init();
+		public abstract Transform GetTile(Vector2 size, Vector2 pos);
+		public abstract Vector3 GetTileSize();
 	}
 	
 	public abstract class Tile : MonoBehaviour {
