@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using UnityEngine;using System.Collections;
 using System.Collections.Generic;
 
 namespace Grid {
@@ -8,11 +7,9 @@ namespace Grid {
 	public sealed class Grid : MonoBehaviour {
 		
 		// Constants:
-		private float gizmoSolidAlpha = 0.7f;
-		private Color gizmoSolidColor = Color.white * 0.7f;
-		private float gizmoWireAlpha = 0.7f;
-		private Color gizmoWireColor = Color.white * 0.8f;
-		private Color gizmoDisplacedColor = Color.white * 0.5f;
+		private readonly Color gizmoSolidColor = Color.white * 0.7f * new Color(1,1,1,0.8f);
+		private readonly Color gizmoWireColor = Color.white * 0.8f * new Color(1,1,1,0.8f);
+		private readonly Color gizmoDisplacedColor = Color.white * 0.5f* new Color(1,1,1,0.8f);
 		
 		// Properties:
 		public bool hideLowTiles = true;
@@ -32,6 +29,7 @@ namespace Grid {
 			height = Mathf.Max(1,Mathf.FloorToInt(transform.localScale.z));
 			displacement = transform.localScale.y;
 			grid = new Transform[width * height];
+			gameObject.tag = "Grid";
 			
 			// Setup the tiles:
 			gen = GetGenerator();
@@ -56,6 +54,26 @@ namespace Grid {
 				grid[i].GetComponent<Tile>().AddController(controller);
 			}
 		}
+		public bool CollidePlayer(Character.Player player){
+			Vector2 gridPos = new Vector2(
+				Mathf.Floor((player.transform.position.x-transform.position.x+gen.GetTileSize().x*(width+1)/2)*gen.GetTileSize().x),
+				Mathf.Floor((player.transform.position.z-transform.position.z+gen.GetTileSize().y*(height+1)/2)*gen.GetTileSize().y));
+			
+			bool collision = false;
+			for(int i = -1; i <= 1; i++){
+				for(int j = -1; j <= 1; j++){
+					if(gridPos.x + i < 0 || gridPos.y + j < 0 || gridPos.x + i >= width || gridPos.y + j >= height){
+						continue;
+					}
+					if(grid[(int)((gridPos.x+i)+(gridPos.y+j)*width)] != null){
+						if(grid[(int)((gridPos.x+i)+(gridPos.y+j)*width)].GetComponent<Tile>().Collide(player)){
+							collision = true;
+						}
+					}
+				}
+			}
+			return collision;
+		}
 		
 		// Private functions:
 		private Generator GetGenerator(){
@@ -78,7 +96,7 @@ namespace Grid {
 					(i%width - ((float)width/2) + 0.5f) * tileSize.x,0,
 					((int)(i/width) - ((float)height/2) + 0.5f) * tileSize.y);
 			t.parent = transform;
-			t.GetComponent<Tile>().Init(t.position - Vector3.up*displacement, t.position);
+			t.GetComponent<Tile>().Init(t.position - Vector3.up*displacement, t.position, hideLowTiles);
 			t.position -= Vector3.up*displacement;
 			
 			grid[i] = t;
@@ -96,10 +114,14 @@ namespace Grid {
 			height = Mathf.Max(0,Mathf.FloorToInt(transform.localScale.z));
 			displacement = transform.localScale.y;
 			
-			gizmoSolidColor.a = gizmoSolidAlpha;
 			Gizmos.color = gizmoSolidColor;
 			Gizmos.DrawCube(transform.position,
 					new Vector3(tileSize.x * width, tileSize.z, tileSize.y * height));
+			for(int i = 0; i < width*height; i++){
+				Gizmos.DrawWireCube(transform.position + 
+					new Vector3(tileSize.x*(i%width)-tileSize.x*(width-1)/2,0,tileSize.y*(int)(i/width)-tileSize.y*(height-1)/2),
+						new Vector3(tileSize.x, tileSize.z, tileSize.y));
+			}
 		}
 		private void OnDrawGizmosSelected() {
 			if(gen == null){
@@ -108,8 +130,6 @@ namespace Grid {
 			if(tileSize.magnitude == 0) {
 				tileSize = gen.GetTileSize();
 			}
-			gizmoWireColor.a = gizmoWireAlpha;
-			gizmoDisplacedColor.a = gizmoWireAlpha;
 			Gizmos.color = gizmoWireColor;
 			Gizmos.DrawWireCube(transform.position,
 					new Vector3(tileSize.x * width, tileSize.z, tileSize.y * height));
@@ -130,15 +150,17 @@ namespace Grid {
 		// Properties:
 		private Vector3 upperPosition;
 		private Vector3 lowerPosition;
+		private bool hide;
 		
 		// Variables:
 		private List<Controller> controllers;
-		private float jitter;
+		private float jitter; // TODO rewrite jitter
 		
 		// Internals:
-		internal void Init(Vector3 lowerPosition, Vector3 upperPosition){
+		internal void Init(Vector3 lowerPosition, Vector3 upperPosition, bool hide){
 			this.lowerPosition = lowerPosition;
 			this.upperPosition = upperPosition;
+			this.hide = hide;
 			
 			this.controllers = new List<Controller>();
 			this.jitter = 0.1f;
@@ -147,10 +169,11 @@ namespace Grid {
 			if(controllers == null){
 				controllers = new List<Controller>();
 			}
-			if(controller.GetInfluence(upperPosition) > 0){
+			if(controller.GetInfluence(upperPosition) > 0 && !controllers.Contains(controller)){
 				controllers.Add(controller);
 			}
 		}
+		internal abstract bool Collide(Character.Player player);
 		
 		// Private functions:
 		private void Update(){
@@ -180,7 +203,7 @@ namespace Grid {
 			}
 			
 			// Destroy the tile if it's outside any influence and it's at 0 to preserve some cpu:
-			if(Vector3.Distance(transform.position,lowerPosition) < 0.0001f && controllers.Count == 0){
+			if(hide && Vector3.Distance(transform.position,lowerPosition) < 0.0001f && controllers.Count == 0){
 				Destroy(gameObject);
 			}
 		}
@@ -196,8 +219,10 @@ namespace Grid {
 		
 		// Private functions:
 		private void Update(){
-			if(transform.position != prevPosition){
-				GameObject.Find("Grid").GetComponent<Grid>().AddController(this);
+			if(prevPosition != transform.position){
+				foreach(GameObject g in GameObject.FindGameObjectsWithTag("Grid")){
+					g.GetComponent<Grid>().AddController(this);
+				}
 			}
 			prevPosition = transform.position;
 		}

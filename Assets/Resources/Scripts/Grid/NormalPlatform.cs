@@ -8,13 +8,29 @@ public class NormalPlatform : Controller {
 	// Properties:
 	public float radius = 3;
 	
+	// Init:
+	private void Start () {
+		radius = Mathf.Abs(transform.lossyScale.y);
+	}
+	
 	internal override float GetInfluence (Vector3 pos){
-		return Mathf.Max(0,radius - Vector3.Distance(pos,transform.position))/radius; // TODO lock to y axis
+		Vector3 flat = pos-transform.position;
+		return (flat.magnitude <= radius)?1:0;
 	}
 	
 	// Gizmo functions:
 	private void OnDrawGizmos() {
-		Gizmos.color = Color.black;
+		if(transform.localScale != Vector3.one*transform.lossyScale.y){
+			transform.localScale = Vector3.one*transform.lossyScale.y;
+			radius = Mathf.Abs(transform.lossyScale.y);
+		}
+		foreach(GameObject g in GameObject.FindGameObjectsWithTag("Grid")){
+			if(g.transform.position.y != transform.position.y){
+				transform.position = new Vector3(transform.position.x,g.transform.position.y,transform.position.z);
+			}
+		}
+		
+		Gizmos.color = Color.white * 0.3f + new Color(0,0,0,1);
 		float inc = (Mathf.PI*2)/180;
 		float angle = Mathf.PI*2;
 		while(angle >= 0){
