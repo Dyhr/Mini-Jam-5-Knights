@@ -11,16 +11,22 @@ namespace Character {
 	
 	[AddComponentMenu("Game/Player")]
 	public class Player : MonoBehaviour {
-	    public Index index;
+		private const float GRAVITY = 1f;
 		
-		private Vector3 velocity;		
+		private Control controller;
+		private Vector3 _velocity;		
 		private bool _alive;
 		private bool _grounded;
+		private float _speed;
+		private float _fallspeed;
+		private Hashtable weapons;
 		
+	    public Index index;
+		public Vector3 velocity { get{ return _velocity; } }
 		public bool alive { get{ return _alive; } }
 		public bool grounded { get{ return _grounded; } }
 		
-		void Start () {
+		private void Start () {
 			switch ((int)index) {
 	            case 1:
 	                renderer.material.color = Color.Lerp(Color.white, Color.red, 0.6f);
@@ -35,19 +41,57 @@ namespace Character {
 	                renderer.material.color = Color.Lerp(Color.white, Color.yellow, 0.6f);
 	                break;
 	        }
+			controller = new Control((int)index);
 			_alive = true;
+			_velocity = Vector3.zero;
+			_speed = 4f;
+			weapons = new Hashtable();
+			foreach(WeaponSlot slot in GetComponentsInChildren<WeaponSlot>()){
+				weapons.Add(slot.gameObject.name,slot.GetComponentInChildren<Weapon>());
+				slot.Init(this);
+			}
 		}
 		
-		void Update () {
+		private void Update () {
 			if(!_alive)return;
-			velocity = new Vector3(0,-1,0)*Time.deltaTime;
-			transform.Translate(velocity);
+			
+			// Movement:
+			Vector3 forward = Camera.main.transform.forward; 
+			forward.y = 0;
+			forward.Normalize();
+			Vector3 input = controller.leftStick.y * forward + controller.leftStick.x * Camera.main.transform.right;
+			_fallspeed += GRAVITY;
+			if(controller.a && _grounded){
+				_fallspeed -= 20;
+			}
+			
+			if(controller.leftStick.magnitude > 0){
+				transform.rotation = Quaternion.RotateTowards(transform.rotation,Quaternion.LookRotation(
+					controller.leftStick.x * Camera.main.transform.right-controller.leftStick.y * forward),920*Time.deltaTime);
+			}
+			transform.position = transform.position + transform.forward * _speed * Time.deltaTime * input.magnitude;
+			transform.Translate(Vector3.down*_fallspeed*Time.deltaTime);
+			
+			// Collision:
 			foreach(GameObject g in GameObject.FindGameObjectsWithTag("Grid")){
 				_grounded = g.GetComponent<Grid.Grid>().CollidePlayer(this);
 				if(_grounded){
 					break;
 				}
 			}
+			if(_grounded && _fallspeed > 0){
+				_fallspeed = 0;
+			}
+			
+			// Weapons:
+			if(weapons.ContainsKey("RightHand")){
+				((Weapon)weapons["RightHand"]).Fire(controller.x);
+			}
+			if(weapons.ContainsKey("LeftHand")){
+				((Weapon)weapons["LeftHand"]).Fire(controller.b);
+			}
+		}
+    	private void OnTriggerEnter(Collider other) {
 		}
 	    private void OnDestroy() {
 	        _alive = false;
@@ -55,6 +99,36 @@ namespace Character {
 	}
 	
 	public class Control {
+		private int _index;
 		
+		public Vector2 leftStick { get { 
+				return new Vector2(
+					Input.GetAxis("joystick "+_index+" axis 0"),
+					Input.GetAxis("joystick "+_index+" axis 1")); 
+			} }
+		public Vector2 rightStick { get { 
+				return Vector2.zero; 
+			} }
+		public Vector2 dpad { get { 
+				return Vector2.zero; 
+			} }
+		public float ltrigger { get { 
+				return 0.0f; 
+			} }
+		public float rtrigger { get { 
+				return 0.0f; 
+			} }
+		public bool a { get { return Input.GetKey("joystick "+_index+" button 0"); } }
+		public bool b { get { return Input.GetKey("joystick "+_index+" button 1"); } }
+		public bool x { get { return Input.GetKey("joystick "+_index+" button 2"); } }
+		public bool y { get { return Input.GetKey("joystick "+_index+" button 3"); } }
+		public bool lBumper { get { return Input.GetKey("joystick "+_index+" button 4"); } }
+		public bool rBumper { get { return Input.GetKey("joystick "+_index+" button 5"); } }
+		public bool back { get { return Input.GetKey("joystick "+_index+" button 6"); } }
+		public bool start { get { return Input.GetKey("joystick "+_index+" button 7"); } }
+		
+		public Control (int joystickIndex) {
+			this._index = joystickIndex;
+		}
 	}
 }

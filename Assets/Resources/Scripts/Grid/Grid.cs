@@ -183,14 +183,12 @@ namespace Grid {
 			
 			// Sum up the influence of nearby controllers:
 			float sum = 0;
-			float inf;
-			int i = controllers.Count;
-			while(i-- > 0){
-				inf = controllers[i].GetInfluence(upperPosition);
+			foreach(Controller controller in controllers){
+				float inf = controller.GetInfluence(upperPosition);
 				if(inf > 0) {
 					sum += inf;
 				} else {
-					controllers.RemoveAt(i); // Remove controller if tile is outside it's influence
+					controllers.Remove(controller); // Remove controller if tile is outside it's influence
 				}
 			}
 			
@@ -219,7 +217,7 @@ namespace Grid {
 		
 		// Private functions:
 		private void Update(){
-			if(prevPosition != transform.position){
+			if(prevPosition.x != transform.position.x || prevPosition.z != transform.position.z){
 				foreach(GameObject g in GameObject.FindGameObjectsWithTag("Grid")){
 					g.GetComponent<Grid>().AddController(this);
 				}
