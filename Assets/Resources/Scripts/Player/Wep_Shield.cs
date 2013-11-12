@@ -8,7 +8,12 @@ namespace Character {
 		
 		private Vector3 positionOrigin;
 		private Vector3 rotationOrigin;
-		private Vector3 scaleOrigin;
+        private Vector3 scaleOrigin;
+
+        override internal float setpause {
+            get { return pause; }
+            set { pause = value; }
+        }
 		
 		private void Start(){
 			positionOrigin = transform.parent.localPosition;

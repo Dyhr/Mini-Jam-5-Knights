@@ -24,7 +24,9 @@ namespace Character {
 	    public int index;
 		public Vector3 velocity { get{ return _velocity; } }
 		public bool alive { get{ return _alive; } }
-		public bool grounded { get{ return _grounded; } }
+        public bool grounded { get { return _grounded; } }
+        public bool attacking { get { return Weapon.alive == weapons["RightHand"]; } }
+        public bool defending { get { return Weapon.alive == weapons["LeftHand"]; } }
 		
 		private void Start () {
 			switch ((int)index) {
@@ -95,7 +97,7 @@ namespace Character {
 				((Weapon)weapons["LeftHand"]).Fire(controller.b);
 			}
 		}
-    	private void OnTriggerEnter(Collider other) {
+        private void OnTriggerEnter(Collider other) {
             if (!_alive) {
                 return;
             }
@@ -103,9 +105,28 @@ namespace Character {
                 _alive = false;
                 Destroy(gameObject, 0.2f);
             } else if (other.gameObject.GetComponent<Wep_Sword>()) {
-
+                Player player = other.transform.parent.parent.GetComponent<Player>();
+                if (player != this) {
+                    if (player.attacking) {
+                        Instantiate(Resources.Load("HitParticle"), (transform.position + other.transform.parent.position) / 2, Quaternion.identity);
+                        if (!(defending && Vector3.Angle(transform.forward, transform.position - other.transform.parent.position) < 180)) {
+                            SoundEffect s = (Instantiate(Resources.Load("SoundEff")) as GameObject).GetComponent<SoundEffect>();
+                            s.init("Sounds/hit_" + Mathf.CeilToInt(Random.value * 3));
+                            Stun((transform.position - other.transform.parent.position).normalized * 8, 0);
+                        } else {
+                            SoundEffect s = (Instantiate(Resources.Load("SoundEff")) as GameObject).GetComponent<SoundEffect>();
+                            s.init("Sounds/defend_" + Mathf.CeilToInt(Random.value * 3));
+                            Stun((transform.position - other.transform.parent.position).normalized * 2,0);
+                            player.Stun(-(transform.position - other.transform.parent.position).normalized * 6,1.5f);
+                        }
+                    }
+                }
             }
-		}
+        }
+        public void Stun(Vector3 force, float pause) {
+            ((Weapon)weapons["LeftHand"]).setpause += pause;
+            ((Weapon)weapons["RightHand"]).setpause += pause;
+        }
 	    private void OnDestroy() {
 	        _alive = false;
 		}

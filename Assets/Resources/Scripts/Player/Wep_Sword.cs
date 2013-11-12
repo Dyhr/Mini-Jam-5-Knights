@@ -9,6 +9,11 @@ namespace Character {
 		private Vector3 positionOrigin;
 		private Vector3 rotationOrigin;
 		private Vector3 scaleOrigin;
+
+        override internal float setpause {
+            get { return pause; }
+            set { pause = value; }
+        }
 		
 		private void Start(){
 			positionOrigin = transform.parent.localPosition;
@@ -17,9 +22,9 @@ namespace Character {
 		}
 	
 		internal override void Fire (bool state) {
-			if(state && timer <= 0 && pause <= 0 && alive == null){
+	    	if(state && timer <= 0 && pause <= 0 && alive == null){
 	            timer = 0.4f;
-	            pause = 0.6f;
+                pause = 0.6f;
 				alive = this;
 	            SoundEffect sound = (Instantiate(Resources.Load("SoundEff")) as GameObject).GetComponent<SoundEffect>();
 	            sound.init("Sounds/swing_"+(Mathf.CeilToInt(Random.value*3)));

@@ -14,8 +14,9 @@ namespace Character {
 		}
 	}
 	public abstract class Weapon : MonoBehaviour {
-		protected static Weapon alive;
+		internal static Weapon alive;
 		internal Player player;
 		internal abstract void Fire(bool state);
+        internal abstract float setpause { get; set; }
 	}
 }

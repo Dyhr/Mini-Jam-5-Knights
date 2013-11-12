@@ -71,6 +71,7 @@ public class StartUp : MonoBehaviour {
                 } else {
                     players.Remove(i);
                 }
+                Debug.Log(i);
             }
             if (Input.GetKeyDown("joystick " + i + " button 7") && players.Keys.Count > 0) {
                 int numPlayers = players.Keys.Count;
@@ -99,7 +100,7 @@ public class StartUp : MonoBehaviour {
 
                     Transform pl = (Instantiate(Resources.Load("Prefabs/Player")) as GameObject).transform;
                     pl.position = spawn.transform.position;
-                    pl.GetComponent<Character.Player>().index = j;
+                    pl.GetComponent<Character.Player>().index = (int)players[j];
                 }
 
                 banner.renderer.enabled = false;
