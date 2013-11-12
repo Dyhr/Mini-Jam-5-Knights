@@ -41,6 +41,7 @@ namespace Character {
 	                renderer.material.color = Color.Lerp(Color.white, Color.yellow, 0.6f);
 	                break;
 	        }
+            gameObject.tag = "Player";
 			controller = new Control((int)index);
 			_alive = true;
 			_velocity = Vector3.zero;

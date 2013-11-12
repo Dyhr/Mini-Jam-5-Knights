@@ -63,9 +63,6 @@ public class Player : MonoBehaviour {
                 break;
             }
         }
-        if (Cam.players == null)
-            Cam.players = new ArrayList();
-        Cam.players.Add(this);
 
         switch ((int)index) {
             case 1:
@@ -93,11 +90,11 @@ public class Player : MonoBehaviour {
 
     void OnDestroy() {
         ali = false;
-        Cam.players.Remove(this);
-        if ((Cam.players.Count == 0 && Cam.alone) || (Cam.players.Count == 1 && !Cam.alone)) {
+        //Cam.players.Remove(this);
+        if ((Cam.players.Length == 0 && Cam.alone) || (Cam.players.Length == 1 && !Cam.alone)) {
             Cam.destroy = 0;
-			foreach(Player p in Cam.players){
-				p.victory = 1;
+			foreach(GameObject p in Cam.players){
+				p.GetComponent<Player>().victory = 1;
 			}
         }
     }

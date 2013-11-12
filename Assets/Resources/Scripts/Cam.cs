@@ -2,7 +2,7 @@
 using System.Collections;
 
 public class Cam : MonoBehaviour {
-    public static ArrayList players;
+    public static GameObject[] players;
     public static bool alone = false;
     public static float destroy = -1;
     public static Vector3 up = Vector3.forward;
@@ -12,8 +12,7 @@ public class Cam : MonoBehaviour {
 
 	void Start () {
         destroy = -1;
-        if (players == null)
-            players = new ArrayList(4);
+        players = GameObject.FindGameObjectsWithTag("Player");
         music = gameObject.AddComponent<AudioSource>();
 	}
 
@@ -22,7 +21,8 @@ public class Cam : MonoBehaviour {
             destroy += Time.deltaTime;
         if(destroy > 2.25f)
             Application.LoadLevel(0);
-        if (players.Count > 0) {
+        players = GameObject.FindGameObjectsWithTag("Player");
+        if (players.Length > 0) {
             if (!music.isPlaying && clips.Length > 0) {
                 music.clip = clips[Mathf.FloorToInt(Random.value * clips.Length)];
                 music.loop = true;
@@ -31,20 +31,20 @@ public class Cam : MonoBehaviour {
             }
             Vector3 average = Vector3.zero;
             float dist = 0;
-            foreach (Player p in players) {
+            foreach (GameObject p in players) {
                 average += p.transform.position;
-                foreach (Player p2 in players) {
+                foreach (GameObject p2 in players) {
                     if (p != p2) {
                         if (Vector3.Distance(p.transform.position, p2.transform.position) > dist)
                             dist = Vector3.Distance(p.transform.position, p2.transform.position);
                     }
                 }
             }
-            average /= players.Count;
+            average /= players.Length;
             transform.position = Vector3.Lerp(transform.position,average + (Vector3.one + Vector3.up) * 8,0.2f);
             transform.LookAt(transform.position - (Vector3.one + Vector3.up));
 
-            if(players.Count > 1)
+            if(players.Length > 1)
                 camera.orthographicSize = dist + 3;
             else
                 camera.orthographicSize = Mathf.Lerp(camera.orthographicSize,12,0.5f);
