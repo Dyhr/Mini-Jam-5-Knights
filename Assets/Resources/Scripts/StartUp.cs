@@ -100,7 +100,7 @@ public class StartUp : MonoBehaviour {
 
                     Transform pl = (Instantiate(Resources.Load("Prefabs/Player")) as GameObject).transform;
                     pl.position = spawn.transform.position;
-                    pl.GetComponent<Character.Player>().index = (int)players[j];
+                    pl.GetComponent<Character.Player>().index = j;
                 }
 
                 banner.renderer.enabled = false;
