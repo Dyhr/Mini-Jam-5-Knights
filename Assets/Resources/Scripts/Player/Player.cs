@@ -21,7 +21,7 @@ namespace Character {
 		private float _fallspeed;
 		private Hashtable weapons;
 		
-	    public Index index;
+	    public int index;
 		public Vector3 velocity { get{ return _velocity; } }
 		public bool alive { get{ return _alive; } }
 		public bool grounded { get{ return _grounded; } }
@@ -39,7 +39,10 @@ namespace Character {
 	                break;
 	            case 4:
 	                renderer.material.color = Color.Lerp(Color.white, Color.yellow, 0.6f);
-	                break;
+                    break;
+                default:
+                    renderer.material.color = (Color.white + Color.red) / 2;
+                    break;
 	        }
             gameObject.tag = "Player";
 			controller = new Control((int)index);
