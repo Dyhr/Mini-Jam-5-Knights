@@ -25,8 +25,8 @@ namespace Character {
 		public Vector3 velocity { get{ return _velocity; } }
 		public bool alive { get{ return _alive; } }
         public bool grounded { get { return _grounded; } }
-        public bool attacking { get { return Weapon.alive == weapons["RightHand"]; } }
-        public bool defending { get { return Weapon.alive == weapons["LeftHand"]; } }
+        public bool attacking { get { return Weapon.alive.ContainsValue(weapons["RightHand"]); } }
+        public bool defending { get { return Weapon.alive.ContainsValue(weapons["LeftHand"]); } }
 		
 		private void Start () {
 			switch ((int)index) {

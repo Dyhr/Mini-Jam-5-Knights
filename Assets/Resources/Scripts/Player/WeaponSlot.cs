@@ -14,7 +14,7 @@ namespace Character {
 		}
 	}
 	public abstract class Weapon : MonoBehaviour {
-		internal static Weapon alive;
+		internal static Hashtable alive = new Hashtable();
 		internal Player player;
 		internal abstract void Fire(bool state);
         internal abstract float setpause { get; set; }
