@@ -59,8 +59,8 @@ public class StartUp : MonoBehaviour {
         }
 
 
-        for (int i = 1; i <= 4; i++) {
-            if (Input.GetKeyDown("joystick " + i + " button 0")) {
+        for (int i = 1; i <= 10; i++) {
+            if (Input.GetKeyDown("joystick "+i+" button 0")) {
                 if (!players.ContainsKey(i)) {
                     for (int j = 1; j <= 10; j++) {
                         if (!players.ContainsValue(j)) {

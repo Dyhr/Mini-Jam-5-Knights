@@ -9,7 +9,6 @@ namespace Character {
 		private Vector3 positionOrigin;
 		private Vector3 rotationOrigin;
         private Vector3 scaleOrigin;
-        private int player;
 
         override internal float setpause {
             get { return pause; }
@@ -20,7 +19,6 @@ namespace Character {
 			positionOrigin = transform.parent.localPosition;
 			rotationOrigin = transform.parent.localEulerAngles;
             scaleOrigin = transform.parent.localScale;
-            player = transform.parent.parent.GetComponent<Player>().index;
 		}
 	
 		internal override void Fire (bool state) {
