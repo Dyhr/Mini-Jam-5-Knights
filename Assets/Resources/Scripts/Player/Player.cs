@@ -96,6 +96,15 @@ namespace Character {
 			}
 		}
     	private void OnTriggerEnter(Collider other) {
+            if (!_alive) {
+                return;
+            }
+            if (other.gameObject.tag == "Magma") {
+                _alive = false;
+                Destroy(gameObject, 0.2f);
+            } else if (other.gameObject.GetComponent<Wep_Sword>()) {
+
+            }
 		}
 	    private void OnDestroy() {
 	        _alive = false;

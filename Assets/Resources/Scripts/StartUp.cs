@@ -45,6 +45,9 @@ public class StartUp : MonoBehaviour {
         for (int i = 0; i < 4; i++) {
             //if(Input.GetButtonDown("Player" + (i + 1) + "Attack"))
                 //joined[i] = !joined[i];
+            if (playerMarkers[i] == null) {
+                continue;
+            }
             playerMarkers[i].position = Camera.main.transform.position + Camera.main.transform.right * (-30 + i*20) - Camera.main.transform.up * 16 + Camera.main.transform.forward * 5;
             playerMarkers[i].rotation = Camera.main.transform.rotation;
 			playerMarkers[i].Rotate(0,180,0);
@@ -69,7 +72,7 @@ public class StartUp : MonoBehaviour {
                     players.Remove(i);
                 }
             }
-            if (Input.GetKeyDown("joystick " + i + " button 7")) {
+            if (Input.GetKeyDown("joystick " + i + " button 7") && players.Keys.Count > 0) {
                 int numPlayers = players.Keys.Count;
                 if (numPlayers == 0)
                     return;
@@ -96,6 +99,7 @@ public class StartUp : MonoBehaviour {
 
                     Transform pl = (Instantiate(Resources.Load("Prefabs/Player")) as GameObject).transform;
                     pl.position = spawn.transform.position;
+                    pl.GetComponent<Character.Player>().index = j;
                 }
 
                 banner.renderer.enabled = false;
