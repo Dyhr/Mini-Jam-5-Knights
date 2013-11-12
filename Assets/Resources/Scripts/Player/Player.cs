@@ -14,7 +14,7 @@ namespace Character {
 		private const float GRAVITY = 1f;
 		
 		private Control controller;
-		private Vector3 _velocity;		
+		internal Vector3 _velocity;
 		private bool _alive;
 		private bool _grounded;
 		private float _speed;
@@ -56,6 +56,7 @@ namespace Character {
 				weapons.Add(slot.gameObject.name,slot.GetComponentInChildren<Weapon>());
 				slot.Init(this);
 			}
+            rigidbody.freezeRotation = true;
 		}
 		
 		private void Update () {
@@ -75,8 +76,9 @@ namespace Character {
 				transform.rotation = Quaternion.RotateTowards(transform.rotation,Quaternion.LookRotation(
 					controller.leftStick.x * Camera.main.transform.right-controller.leftStick.y * forward),920*Time.deltaTime);
 			}
-			transform.position = transform.position + transform.forward * _speed * Time.deltaTime * input.magnitude;
+            transform.position = transform.position + (transform.forward * _speed * input.magnitude + _velocity) * Time.deltaTime;
 			transform.Translate(Vector3.down*_fallspeed*Time.deltaTime);
+            _velocity *= 0.9f;
 			
 			// Collision:
 			foreach(GameObject g in GameObject.FindGameObjectsWithTag("Grid")){
@@ -104,7 +106,7 @@ namespace Character {
             if (other.gameObject.tag == "Magma") {
                 _alive = false;
                 Destroy(gameObject, 0.2f);
-            } else if (other.gameObject.GetComponent<Wep_Sword>()) {
+            } else if (other.gameObject.tag == "sword") {
                 Player player = other.transform.parent.parent.GetComponent<Player>();
                 if (player != this) {
                     if (player.attacking) {
@@ -126,6 +128,7 @@ namespace Character {
         public void Stun(Vector3 force, float pause) {
             ((Weapon)weapons["LeftHand"]).setpause += pause;
             ((Weapon)weapons["RightHand"]).setpause += pause;
+            _velocity += force;
         }
 	    private void OnDestroy() {
 	        _alive = false;
