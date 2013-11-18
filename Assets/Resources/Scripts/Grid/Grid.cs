@@ -95,6 +95,7 @@ namespace Grid {
 			t.position = transform.position + new Vector3(
 					(i%width - ((float)width/2) + 0.5f) * tileSize.x,0,
 					((int)(i/width) - ((float)height/2) + 0.5f) * tileSize.y);
+			t.Rotate(0f,0f,Mathf.Floor(Random.value*8)*90);
 			t.parent = transform;
 			t.GetComponent<Tile>().Init(t.position - Vector3.up*displacement, t.position, hideLowTiles);
 			t.position -= Vector3.up*displacement;
