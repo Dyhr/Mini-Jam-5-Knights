@@ -43,7 +43,7 @@ namespace Character {
 	                renderer.material.color = Color.Lerp(Color.white, Color.yellow, 0.6f);
                     break;
                 default:
-                    renderer.material.color = (Color.white + Color.red) / 2;
+                    renderer.material.color = (Color.white) / 2;
                     break;
 	        }
             gameObject.tag = "Player";
@@ -66,15 +66,22 @@ namespace Character {
 			Vector3 forward = Camera.main.transform.forward; 
 			forward.y = 0;
 			forward.Normalize();
-			Vector3 input = controller.leftStick.y * forward + controller.leftStick.x * Camera.main.transform.right;
+			Vector3 input = Vector3.zero;
+			if(index > 0){
+				input = controller.leftStick.y * forward + controller.leftStick.x * Camera.main.transform.right;
+			}
 			_fallspeed += GRAVITY;
-			if(controller.a && _grounded){
-				_fallspeed -= 20;
+			if(index > 0){
+				if(controller.a && _grounded){
+					_fallspeed -= 20;
+				}
 			}
 			
-			if(controller.leftStick.magnitude > 0){
-				transform.rotation = Quaternion.RotateTowards(transform.rotation,Quaternion.LookRotation(
-					controller.leftStick.x * Camera.main.transform.right-controller.leftStick.y * forward),920*Time.deltaTime);
+			if(index > 0){
+				if(controller.leftStick.magnitude > 0){
+					transform.rotation = Quaternion.RotateTowards(transform.rotation,Quaternion.LookRotation(
+						controller.leftStick.x * Camera.main.transform.right-controller.leftStick.y * forward),920*Time.deltaTime);
+				}
 			}
             transform.position = transform.position + (transform.forward * _speed * input.magnitude + _velocity) * Time.deltaTime;
 			transform.Translate(Vector3.down*_fallspeed*Time.deltaTime);
@@ -100,7 +107,7 @@ namespace Character {
 			}
 		}
         private void OnTriggerEnter(Collider other) {
-            if (!_alive) {
+            if (!_alive || index <= 0) {
                 return;
             }
             if (other.gameObject.tag == "Magma") {

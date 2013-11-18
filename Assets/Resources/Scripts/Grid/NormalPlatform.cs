@@ -10,7 +10,6 @@ public class NormalPlatform : Controller {
 	
 	// Init:
 	private void Start () {
-		radius = Mathf.Abs(transform.lossyScale.y);
 	}
 	
 	internal override float GetInfluence (Vector3 pos){
@@ -20,10 +19,7 @@ public class NormalPlatform : Controller {
 	
 	// Gizmo functions:
 	private void OnDrawGizmos() {
-		if(transform.localScale != Vector3.one*transform.lossyScale.y){
-			transform.localScale = Vector3.one*transform.lossyScale.y;
-			radius = Mathf.Abs(transform.lossyScale.y);
-		}
+		radius = Mathf.Abs(transform.lossyScale.y);
 		foreach(GameObject g in GameObject.FindGameObjectsWithTag("Grid")){
 			if(g.transform.position.y != transform.position.y){
 				transform.position = new Vector3(transform.position.x,g.transform.position.y,transform.position.z);

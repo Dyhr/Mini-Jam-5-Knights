@@ -2,7 +2,7 @@
 using System.Collections;
 
 public class StartUp : MonoBehaviour {
-    public static bool[] joined = new bool[10];
+    public static bool[] joined = new bool[8];
     private Transform banner;
     private Transform[] playerMarkers;
     private int[] indices;

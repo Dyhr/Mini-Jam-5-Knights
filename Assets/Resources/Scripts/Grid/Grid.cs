@@ -183,9 +183,10 @@ namespace Grid {
 			
 			// Sum up the influence of nearby controllers:
 			float sum = 0;
-			foreach(Controller controller in controllers){
+			for(int i = 0; i < controllers.Count; i++){
+				Controller controller = controllers[i];
 				float inf = controller.GetInfluence(upperPosition);
-				if(inf > 0) {
+				if(inf > 0 && controller.enabled == true) {
 					sum += inf;
 				} else {
 					controllers.Remove(controller); // Remove controller if tile is outside it's influence
