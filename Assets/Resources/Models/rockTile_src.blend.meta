@@ -6,15 +6,30 @@ ModelImporter:
     100000: rockTile
     100002: rockTile_high
     100004: //RootNode
+    100006: rockTile_high_MeshPart0
+    100008: rockTile_high_MeshPart1
+    100010: rockTile_high_MeshPart2
     400000: rockTile
     400002: rockTile_high
     400004: //RootNode
+    400006: rockTile_high_MeshPart0
+    400008: rockTile_high_MeshPart1
+    400010: rockTile_high_MeshPart2
     2300000: rockTile
     2300002: rockTile_high
+    2300004: rockTile_high_MeshPart0
+    2300006: rockTile_high_MeshPart1
+    2300008: rockTile_high_MeshPart2
     3300000: rockTile
     3300002: rockTile_high
+    3300004: rockTile_high_MeshPart0
+    3300006: rockTile_high_MeshPart1
+    3300008: rockTile_high_MeshPart2
     4300000: rockTile
     4300002: rockTile_high
+    4300004: rockTile_high_MeshPart0
+    4300006: rockTile_high_MeshPart1
+    4300008: rockTile_high_MeshPart2
     7400000: Default Take
     9500000: //RootNode
   materials:
@@ -24,11 +39,13 @@ ModelImporter:
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
+    optimizeGameObjects: 0
     animationCompression: 1
     animationRotationError: .5
     animationPositionError: .5
     animationScaleError: .5
     animationWrapMode: 0
+    extraExposedTransformPaths: []
     clipAnimations: []
     isReadable: 1
   meshes:
@@ -56,7 +73,6 @@ ModelImporter:
   humanDescription:
     human: []
     skeleton: []
-    handles: []
     armTwist: .5
     foreArmTwist: .5
     upperLegTwist: .5
@@ -66,6 +82,5 @@ ModelImporter:
     feetSpacing: 0
     rootMotionBoneName: 
   lastHumanDescriptionAvatarSource: {instanceID: 0}
-  additionalBone: 1
   animationType: 2
   userData: 
