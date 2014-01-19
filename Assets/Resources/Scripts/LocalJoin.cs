@@ -46,19 +46,14 @@ public class LocalJoin : MonoBehaviour {
 		switch((int)index) {
 	     	case 1:
 	            return Color.Lerp(Color.white, Color.red, 0.6f);
-	            break;
 	        case 2:
 	            return Color.Lerp(Color.white, Color.blue, 0.6f);
-	            break;
 	        case 3:;
 	            return Color.Lerp(Color.white, Color.green, 0.6f);
-	            break;
 	        case 4:
 	            return Color.Lerp(Color.white, Color.yellow, 0.6f);
-                break;
             default:
                 return (Color.white) / 2;
-                break;
 	    }
 	}
 }

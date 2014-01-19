@@ -10,13 +10,13 @@ public class Cam : MonoBehaviour {
     private AudioSource music;
     public AudioClip[] clips;
 
-	void Start () {
+	private void Start () {
         destroy = -1;
         players = GameObject.FindGameObjectsWithTag("Player");
         music = gameObject.AddComponent<AudioSource>();
 	}
 
-    void Update() {
+    private void Update() {
         if (destroy >= 0)
             destroy += Time.deltaTime;
         if(destroy > 2.25f)
